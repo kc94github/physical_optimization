@@ -1,0 +1,10 @@
+pylint
+black
+qp_solvers
+numpy
+
+# black src -l 79
+# black test -l 79
+# python3.8 -m unittest
+# pylint --generate-rcfile > .pylintrc
+# pylint src

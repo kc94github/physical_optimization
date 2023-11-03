@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-class Abstract(ABC):
 
+class Abstract(ABC):
     @abstractmethod
     def __repr__(self) -> str:
         """Show the current class info."""
