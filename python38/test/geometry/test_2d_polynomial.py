@@ -18,6 +18,16 @@ class TestPolynomial2d(unittest.TestCase):
         self.assertEqual(poly.x_coefficients, x_coeffs)
         self.assertEqual(poly.y_coefficients, y_coeffs)
 
+    def test_poly_error(self):
+        # x = t^3 + 2t^2+ 3t + 4
+        # y = 2t^3 + 3
+        x_coeffs = [4, 3, 2, 1]
+        y_coeffs = [0, 0, 2]
+        with self.assertRaises(AssertionError):
+            poly = Polynomial2d.polynomial_from_coefficients(
+                x_coeffs, y_coeffs
+            )
+
     def test_poly_evals(self):
         # x = t^3 + 2t^2+ 3t + 4
         # y = 2t^3 + 3
