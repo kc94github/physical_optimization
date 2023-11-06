@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List
 from src.abstract import Abstract
-from src.geometry.polynomial import Polynomial
+from src.geometry.polynomial1d import Polynomial1d
 
 
 class Polynomial2d(Abstract):
@@ -11,14 +11,20 @@ class Polynomial2d(Abstract):
         assert len(x_coefficients) == len(y_coefficients)
         self._order = len(x_coefficients) - 1
         self._total_param = len(x_coefficients) * 2
-        self._x_polynomial = Polynomial(x_coefficients)
-        self._y_polynomial = Polynomial(y_coefficients)
+        self._x_polynomial = Polynomial1d(x_coefficients)
+        self._y_polynomial = Polynomial1d(y_coefficients)
 
     @classmethod
     def polynomial_from_coefficients(
         cls, x_coefficients: List[float], y_coefficients: List[float]
     ):
         return cls(x_coefficients, y_coefficients)
+
+    @classmethod
+    def polynomial2d_from_polynomial1d(
+        cls, x_polynomial: Polynomial1d, y_polynomial: Polynomial1d
+    ):
+        return cls(x_polynomial.coefficients, y_polynomial.coefficients)
 
     def __repr__(self) -> str:
         return f"Polynomial2D with order: {self._order}, \
@@ -40,11 +46,11 @@ class Polynomial2d(Abstract):
         return self._y_polynomial.coefficients
 
     @property
-    def x_polynomial(self) -> Polynomial:
+    def x_polynomial(self) -> Polynomial1d:
         return self._x_polynomial
 
     @property
-    def y_polynomial(self) -> Polynomial:
+    def y_polynomial(self) -> Polynomial1d:
         return self._y_polynomial
 
     @property

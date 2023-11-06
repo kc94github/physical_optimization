@@ -4,7 +4,7 @@ from src.abstract import Abstract
 from src.geometry.coefficient_base import CoefficientBase
 
 
-class Polynomial(CoefficientBase):
+class Polynomial1d(CoefficientBase):
     def __init__(self, coefficients: List[float]):
         self._order = len(coefficients) - 1
         self._total_param = len(coefficients)
@@ -16,7 +16,7 @@ class Polynomial(CoefficientBase):
         return cls(coefficients)
 
     def __repr__(self) -> str:
-        return f"Polynomial with order {self._order} and ascending coefficients {self._coefficients}. "
+        return f"Polynomial1d with order {self._order} and ascending coefficients {self._coefficients}. "
 
     def summation(coefficient_func):
         def wrapper(self, t: float, *args, **kwargs):
@@ -59,20 +59,20 @@ class Polynomial(CoefficientBase):
     def third_derivative(self, t: float) -> float:
         return self.t_third_derivative_coefficient(t)
 
-    def derivative_polynomial(self, order: int = 1) -> "Polynomial":
+    def derivative_polynomial(self, order: int = 1) -> "Polynomial1d":
         old_coefficients = self._coefficients
         for o in range(order):
             new_coefficients = []
             for i in range(1, len(old_coefficients)):
                 new_coefficients.append(old_coefficients[i] * i)
             old_coefficients = new_coefficients
-        return Polynomial.polynomial_from_coefficients(old_coefficients)
+        return Polynomial1d.polynomial_from_coefficients(old_coefficients)
 
-    def integral_polynomial(self, order: int = 1) -> "Polynomial":
+    def integral_polynomial(self, order: int = 1) -> "Polynomial1d":
         old_coefficients = self._coefficients
         for o in range(order):
             new_coefficients = [0]
             for i in range(len(old_coefficients)):
                 new_coefficients.append(old_coefficients[i] * 1.0 / (i + 1))
             old_coefficients = new_coefficients
-        return Polynomial.polynomial_from_coefficients(old_coefficients)
+        return Polynomial1d.polynomial_from_coefficients(old_coefficients)

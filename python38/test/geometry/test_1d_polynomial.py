@@ -1,13 +1,13 @@
 import unittest
 import numpy as np
-from src.geometry.polynomial import Polynomial
+from src.geometry.polynomial1d import Polynomial1d
 
 
-class TestPolynomial(unittest.TestCase):
+class TestPolynomial1d(unittest.TestCase):
     def test_poly_basic(self):
         # y = x^3 + 2x^2+ 3x + 4
         coeffs = [4, 3, 2, 1]
-        poly = Polynomial.polynomial_from_coefficients(coeffs)
+        poly = Polynomial1d.polynomial_from_coefficients(coeffs)
         print(poly)
 
         self.assertEqual(poly.order, 3)
@@ -17,7 +17,7 @@ class TestPolynomial(unittest.TestCase):
     def test_evaluations(self):
         # y = x^3 + 2x^2+ 3x + 4
         coeffs = [4, 3, 2, 1]
-        poly = Polynomial.polynomial_from_coefficients(coeffs)
+        poly = Polynomial1d.polynomial_from_coefficients(coeffs)
 
         self.assertEqual(poly.evaluate(2.0), 26)
         self.assertEqual(poly.derivative(2.0), 23)
@@ -30,7 +30,7 @@ class TestPolynomial(unittest.TestCase):
         first_order_coeffs = [3, 4, 3]
         second_order_coeffs = [4, 6]
         third_order_coeffs = [6]
-        poly = Polynomial.polynomial_from_coefficients(coeffs)
+        poly = Polynomial1d.polynomial_from_coefficients(coeffs)
 
         first_order_poly = poly.derivative_polynomial()
         self.assertEqual(first_order_poly.order, 2)
@@ -54,7 +54,7 @@ class TestPolynomial(unittest.TestCase):
         coeffs = [4, 3, 3, 1]
         first_order_coeffs = [0, 4, 3 / 2, 3 / 3, 1 / 4]
         second_order_coeffs = [0, 0, 2, 0.5, 0.25, 0.05]
-        poly = Polynomial.polynomial_from_coefficients(coeffs)
+        poly = Polynomial1d.polynomial_from_coefficients(coeffs)
 
         first_order_poly = poly.integral_polynomial()
         self.assertEqual(first_order_poly.order, 4)

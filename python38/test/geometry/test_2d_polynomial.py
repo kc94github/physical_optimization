@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from src.geometry.polynomial import Polynomial
+from src.geometry.polynomial1d import Polynomial1d
 from src.geometry.polynomial2d import Polynomial2d
 
 
