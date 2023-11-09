@@ -8,7 +8,7 @@ from src.abstract import Abstract
 class SolverBase(Abstract):
     def __init__(self, size: int = 1):
         self._size = size
-        init_matrices()
+        self.init_matrices()
 
     def init_matrices(self):
         self._hessian_matrix = np.zeros([self._size, self._size])
@@ -19,6 +19,15 @@ class SolverBase(Abstract):
         self._inequality_constraint_vector = None
         self._lower_bound_vector = None
         self._upper_bound_vector = None
+
+    def __repr__(self):
+        return f"QP Problem: \n Size: {self._size} \n Hessian: {self._hessian_matrix},{self._gradient_vector} \n Eq_constraint: {self._equality_constraint_matrix},{self._equality_constraint_vector} \n Ineq_constraint: {self._inequality_constraint_matrix},{self._inequality_constraint_vector} \n Lower/Upper bound: {self._lower_bound_vector},{self._upper_bound_vector}" 
+
+    def size(self) -> int:
+        return self._size
+
+    def __len__(self) -> int:
+        return self.size()
 
     @property
     def hessian_matrix(self) -> np.ndarray:
@@ -99,7 +108,7 @@ class SolverBase(Abstract):
         (
             self._equality_constraint_matrix,
             self._equality_constraint_vector,
-        ) = _by_adding_constraint_condition(
+        ) = SolverBase._by_adding_constraint_condition(
             equality_matrix,
             equality_vector,
             self._equality_constraint_matrix,
@@ -114,7 +123,7 @@ class SolverBase(Abstract):
         (
             self._inequality_constraint_matrix,
             self._inequality_constraint_vector,
-        ) = _by_adding_constraint_condition(
+        ) = SolverBase._by_adding_constraint_condition(
             inequality_matrix,
             inequality_vector,
             self._inequality_constraint_matrix,
@@ -161,7 +170,7 @@ class SolverBase(Abstract):
             (total_constraint_matrix, coefficient_matrix), axis=0
         ), np.concatenate((total_constraint_vector, constant_vector), axis=0)
 
-    def solve(self, solver_name: str = "osqp") -> Solution:
+    def solve(self, solver_name: str = "osqp", solution_only: bool = True) -> Solution:
         if np.equal(
             self._hessian_matrix, np.zeros([self._size, self._size])
         ).all():
@@ -181,4 +190,6 @@ class SolverBase(Abstract):
             self._upper_bound_vector,
         )
         solution = solve_problem(problem, solver=solver_name)
+        if solution_only:
+            return solution.x
         return solution
