@@ -5,7 +5,7 @@ from qpsolvers.solution import Solution
 from src.abstract import Abstract
 
 
-class SolverBase(Abstract):
+class SolverImpl(Abstract):
     def __init__(self, size: int = 1):
         self._size = size
         self.init_matrices()
@@ -21,7 +21,7 @@ class SolverBase(Abstract):
         self._upper_bound_vector = None
 
     def __repr__(self):
-        return f"QP Problem: \n Size: {self._size} \n Hessian: {self._hessian_matrix},{self._gradient_vector} \n Eq_constraint: {self._equality_constraint_matrix},{self._equality_constraint_vector} \n Ineq_constraint: {self._inequality_constraint_matrix},{self._inequality_constraint_vector} \n Lower/Upper bound: {self._lower_bound_vector},{self._upper_bound_vector}" 
+        return f"QP Problem: \n Size: {self._size} \n Hessian: {self._hessian_matrix},{self._gradient_vector} \n Eq_constraint: {self._equality_constraint_matrix},{self._equality_constraint_vector} \n Ineq_constraint: {self._inequality_constraint_matrix},{self._inequality_constraint_vector} \n Lower/Upper bound: {self._lower_bound_vector},{self._upper_bound_vector}"
 
     def size(self) -> int:
         return self._size
@@ -60,6 +60,30 @@ class SolverBase(Abstract):
     @property
     def upper_bound_vector(self) -> np.ndarray:
         return self._upper_bound_vector
+
+    def add_to_objective_function(
+        self,
+        start_row: int,
+        start_col: int,
+        add_row_size: int,
+        add_col_size: int,
+        add_hessian_submatrix: np.ndarray,
+        add_gradient_subvector: np.ndarray = None,
+    ):
+        assert add_row_size == add_hessian_submatrix.shape[0]
+        assert add_col_size == add_hessian_submatrix.shape[1]
+        self._hessian_matrix[
+            start_row : start_row + add_row_size,
+            start_col : start_col + add_col_size,
+        ] += add_hessian_submatrix
+
+        if add_gradient_subvector != None and add_gradient_subvector.ndim == 2:
+            add_gradient_subvector = add_gradient_subvector.reshape((-1,))
+            assert add_row_size == add_gradient_subvector.shape[0]
+            self._gradient_vector[
+                start_row : start_row + add_row_size
+            ] += add_gradient_subvector
+        return True
 
     def set_objective_function(
         self, hessian_matrix: np.ndarray, gradient_vector: np.ndarray
@@ -108,7 +132,7 @@ class SolverBase(Abstract):
         (
             self._equality_constraint_matrix,
             self._equality_constraint_vector,
-        ) = SolverBase._by_adding_constraint_condition(
+        ) = SolverImpl._by_adding_constraint_condition(
             equality_matrix,
             equality_vector,
             self._equality_constraint_matrix,
@@ -123,7 +147,7 @@ class SolverBase(Abstract):
         (
             self._inequality_constraint_matrix,
             self._inequality_constraint_vector,
-        ) = SolverBase._by_adding_constraint_condition(
+        ) = SolverImpl._by_adding_constraint_condition(
             inequality_matrix,
             inequality_vector,
             self._inequality_constraint_matrix,
@@ -170,7 +194,9 @@ class SolverBase(Abstract):
             (total_constraint_matrix, coefficient_matrix), axis=0
         ), np.concatenate((total_constraint_vector, constant_vector), axis=0)
 
-    def solve(self, solver_name: str = "osqp", solution_only: bool = True) -> Solution:
+    def solve(
+        self, solver_name: str = "osqp", solution_only: bool = True
+    ) -> Solution:
         if np.equal(
             self._hessian_matrix, np.zeros([self._size, self._size])
         ).all():
