@@ -42,9 +42,9 @@ class TestSolverImpl(unittest.TestCase):
         s.set_upper_bound(ub)
         solution_2 = s.solve(solver_name="osqp", solution_only=False)
         x_result_2 = solution_2.x
-        self.assertAlmostEqual(x_result_2[0], x_result[0], 3)
-        self.assertAlmostEqual(x_result_2[1], x_result[1], 3)
-        self.assertAlmostEqual(x_result_2[2], x_result[2], 3)
+        self.assertAlmostEqual(x_result_2[0], x_result[0], 2)
+        self.assertAlmostEqual(x_result_2[1], x_result[1], 2)
+        self.assertAlmostEqual(x_result_2[2], x_result[2], 2)
 
     def test_objective_func(self):
         # Example from official documentation

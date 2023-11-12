@@ -6,6 +6,9 @@ class CoefficientBase(Abstract):
     def __init__(self, order):
         self._order = order
 
+    def __repr__(self):
+        return f"CoefficientBase with order: {self._order}"
+
     @property
     def order(self) -> int:
         return self._order
