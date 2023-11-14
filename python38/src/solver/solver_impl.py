@@ -61,6 +61,11 @@ class SolverImpl(Abstract):
     def upper_bound_vector(self) -> np.ndarray:
         return self._upper_bound_vector
 
+    def add_value_to_gradient_vector(self, row_index: int, value: float):
+        assert row_index < self._gradient_vector.shape[0]
+        self._gradient_vector[row_index] += value
+        return True
+
     def add_to_objective_function(
         self,
         start_row: int,

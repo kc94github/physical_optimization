@@ -51,6 +51,11 @@ class TestSplineNdSolver(unittest.TestCase):
             15.0,
         ]
 
+    def test_pts(self):
+        x = self.test_x()
+        y = self.test_y()
+        return [[xt, yt] for xt, yt in zip(x, y)]
+
     def test_y_first_derivative(self):
         return [1.0, 1.1875, 1.75, 2.6875, 4.0, 5.6875, 7.75, 10.1875, 13.0]
 
@@ -60,23 +65,25 @@ class TestSplineNdSolver(unittest.TestCase):
     def test_y_third_derivative(self):
         return [6, 6, 6, 6, 6, 6, 6, 6, 6]
 
-    def assertThreeKnotsThirdOrderEquation(self, solution: np.ndarray):
-        self.assertAlmostEqual(solution[0], 1, 5)
-        self.assertAlmostEqual(solution[1], 2, 5)
-        self.assertAlmostEqual(solution[2], 3, 5)
-        self.assertAlmostEqual(solution[3], 4, 5)
-        self.assertAlmostEqual(solution[4], 5, 5)
-        self.assertAlmostEqual(solution[5], 1, 5)
-        self.assertAlmostEqual(solution[6], 0, 5)
-        self.assertAlmostEqual(solution[7], 1, 5)
-        self.assertAlmostEqual(solution[8], 10, 5)
-        self.assertAlmostEqual(solution[9], 20, 5)
-        self.assertAlmostEqual(solution[10], 15, 5)
-        self.assertAlmostEqual(solution[11], 4, 5)
-        self.assertAlmostEqual(solution[12], 7, 5)
-        self.assertAlmostEqual(solution[13], 4, 5)
-        self.assertAlmostEqual(solution[14], 3, 5)
-        self.assertAlmostEqual(solution[15], 1, 5)
+    def assertThreeKnotsThirdOrderEquation(
+        self, solution: np.ndarray, precision=5
+    ):
+        self.assertAlmostEqual(solution[0], 1, precision)
+        self.assertAlmostEqual(solution[1], 2, precision)
+        self.assertAlmostEqual(solution[2], 3, precision)
+        self.assertAlmostEqual(solution[3], 4, precision)
+        self.assertAlmostEqual(solution[4], 5, precision)
+        self.assertAlmostEqual(solution[5], 1, precision)
+        self.assertAlmostEqual(solution[6], 0, precision)
+        self.assertAlmostEqual(solution[7], 1, precision)
+        self.assertAlmostEqual(solution[8], 10, precision)
+        self.assertAlmostEqual(solution[9], 20, precision)
+        self.assertAlmostEqual(solution[10], 15, precision)
+        self.assertAlmostEqual(solution[11], 4, precision)
+        self.assertAlmostEqual(solution[12], 7, precision)
+        self.assertAlmostEqual(solution[13], 4, precision)
+        self.assertAlmostEqual(solution[14], 3, precision)
+        self.assertAlmostEqual(solution[15], 1, precision)
 
     def test_eval(self):
         # X(t) = 4t^3+3t^2+2t+1 for [0-1]
@@ -130,3 +137,22 @@ class TestSplineNdSolver(unittest.TestCase):
         rst = s.solve()
         self.assertEqual(type(rst), np.ndarray)
         self.assertThreeKnotsThirdOrderEquation(rst)
+
+    def test_hessian_with_derivatives(self):
+        # X(t) = 4t^3+3t^2+2t+1 for [0-1]
+        # X(t) = 4(t-1)^3 + 15(t-1)^2 + 20(t-1) + 10 for [1-2]
+
+        # Y(t) = t^3 + t + 5 for [0-1]
+        # Y(t) = (t-1)^3 + 3(t-1)^2 + 4(t-1) + 7 for [1-2]
+        s = SplineNdSolver(
+            self.test_knots(), self.test_spline_order(), self.test_dimension()
+        )
+        t = np.array(self.test_t())
+        pts = np.array(self.test_pts())
+
+        s.add_reference_points_to_objective(100000, t, pts)
+        s.add_first_derivative_points_to_objective(0.0001, t)
+        s.add_second_derivative_points_to_objective(0.0001, t)
+        s.add_third_derivative_points_to_objective(0.0001, t)
+        rst = s.solve()
+        self.assertThreeKnotsThirdOrderEquation(rst, 1)
