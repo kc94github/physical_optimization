@@ -147,6 +147,136 @@ class SplineNdSolver(CoefficientBase):
 
         return wrapper
 
+    def add_smooth_constraint(self, order=0) -> bool:
+        assert (
+            order <= 3
+        ), "Smoothing only support up to order = 3, please check"
+        rst = self._add_smooth_constraint_order_zero()
+        if order == 0:
+            return rst
+        rst &= self._add_smooth_constraint_order_one()
+        if order == 1:
+            return rst
+        rst &= self._add_smooth_constraint_order_two()
+        if order == 2:
+            return rst
+        rst &= self._add_smooth_constraint_order_three()
+        if order >= 3:
+            return rst
+        return False  # Should not reach here
+
+    def _add_smooth_constraint_order_zero(self) -> bool:
+        assert (
+            len(self._knots)
+        ) >= 3, "_add_smooth_constraint_order_zero error, knot size < 3"
+        dim = self._dimension
+        smooth_matrix_A = np.zeros(
+            [dim * (len(self._knots) - 2), self._total_param_length]
+        )
+        smooth_matrix_B = np.zeros(dim * (len(self._knots) - 2))
+        for i in range(len(self._knots) - 2):
+            # Current connection knot
+            # Since we are using relative_t for a knot, we need the relative_t to use the coefficient function as well
+            relative_t = self._knots[i + 1] - self._knots[i]
+            coeff = self.t_coefficient(relative_t)
+            index_offset = i * dim * (self._spline_order + 1)
+            next_index_offset = (i + 1) * dim * (self._spline_order + 1)
+            for n in range(dim):
+                for j in range(self._spline_order + 1):
+                    smooth_matrix_A[i * dim + n][
+                        index_offset + n * (self._spline_order + 1) + j
+                    ] = coeff[j]
+                smooth_matrix_A[i * dim + n][
+                    next_index_offset + n * (self._spline_order + 1)
+                ] = -1
+        return self._solver.add_equality_constraint(
+            smooth_matrix_A, smooth_matrix_B
+        )
+
+    def _add_smooth_constraint_order_one(self) -> bool:
+        assert (
+            len(self._knots)
+        ) >= 3, "_add_smooth_constraint_order_one error, knot size < 3"
+        dim = self._dimension
+        smooth_matrix_A = np.zeros(
+            [dim * (len(self._knots) - 2), self._total_param_length]
+        )
+        smooth_matrix_B = np.zeros(dim * (len(self._knots) - 2))
+        for i in range(len(self._knots) - 2):
+            # Current connection knot
+            # Since we are using relative_t for a knot, we need the relative_t to use the coefficient function as well
+            relative_t = self._knots[i + 1] - self._knots[i]
+            coeff = self.t_first_derivative_coefficient(relative_t)
+            index_offset = i * dim * (self._spline_order + 1)
+            next_index_offset = (i + 1) * dim * (self._spline_order + 1)
+            for n in range(dim):
+                for j in range(self._spline_order + 1):
+                    smooth_matrix_A[i * dim + n][
+                        index_offset + n * (self._spline_order + 1) + j
+                    ] = coeff[j]
+                smooth_matrix_A[i * dim + n][
+                    next_index_offset + n * (self._spline_order + 1) + 1
+                ] = -1
+        return self._solver.add_equality_constraint(
+            smooth_matrix_A, smooth_matrix_B
+        )
+
+    def _add_smooth_constraint_order_two(self) -> bool:
+        assert (
+            len(self._knots)
+        ) >= 3, "_add_smooth_constraint_order_one error, knot size < 3"
+        dim = self._dimension
+        smooth_matrix_A = np.zeros(
+            [dim * (len(self._knots) - 2), self._total_param_length]
+        )
+        smooth_matrix_B = np.zeros(dim * (len(self._knots) - 2))
+        for i in range(len(self._knots) - 2):
+            # Current connection knot
+            # Since we are using relative_t for a knot, we need the relative_t to use the coefficient function as well
+            relative_t = self._knots[i + 1] - self._knots[i]
+            coeff = self.t_second_derivative_coefficient(relative_t)
+            index_offset = i * dim * (self._spline_order + 1)
+            next_index_offset = (i + 1) * dim * (self._spline_order + 1)
+            for n in range(dim):
+                for j in range(self._spline_order + 1):
+                    smooth_matrix_A[i * dim + n][
+                        index_offset + n * (self._spline_order + 1) + j
+                    ] = coeff[j]
+                smooth_matrix_A[i * dim + n][
+                    next_index_offset + n * (self._spline_order + 1) + 2
+                ] = -2
+        return self._solver.add_equality_constraint(
+            smooth_matrix_A, smooth_matrix_B
+        )
+
+    def _add_smooth_constraint_order_three(self) -> bool:
+        assert (
+            len(self._knots)
+        ) >= 3, "_add_smooth_constraint_order_one error, knot size < 3"
+        dim = self._dimension
+        smooth_matrix_A = np.zeros(
+            [dim * (len(self._knots) - 2), self._total_param_length]
+        )
+        smooth_matrix_B = np.zeros(dim * (len(self._knots) - 2))
+        for i in range(len(self._knots) - 2):
+            # Current connection knot
+            # Since we are using relative_t for a knot, we need the relative_t to use the coefficient function as well
+            relative_t = self._knots[i + 1] - self._knots[i]
+            coeff = self.t_third_derivative_coefficient(relative_t)
+            index_offset = i * dim * (self._spline_order + 1)
+            next_index_offset = (i + 1) * dim * (self._spline_order + 1)
+            for n in range(dim):
+                for j in range(self._spline_order + 1):
+                    smooth_matrix_A[i * dim + n][
+                        index_offset + n * (self._spline_order + 1) + j
+                    ] = coeff[j]
+                smooth_matrix_A[i * dim + n][
+                    next_index_offset + n * (self._spline_order + 1) + 3
+                ] = -6
+        return self._solver.add_equality_constraint(
+            smooth_matrix_A, smooth_matrix_B
+        )
+
     def apply_derivative_to_objective(
         self,
         coefficient_func,
@@ -220,6 +350,64 @@ class SplineNdSolver(CoefficientBase):
 
         return True
 
+    def apply_upper_bound_with_order(derivative_function):
+        def wrapper(self, t: float, *args, **kwargs):
+            assert (
+                kwargs == {}
+            ), "apply_upper_bound_with_order error, do not use named input variable!"
+            dim = self._dimension
+            # Get index-offset and derivative coefficient from the function
+            index, coeff = derivative_function(self, t, *args)
+
+            assert (
+                len(*args) == dim
+            ), "apply_upper_bound_with_order error, input boundary point size != dimension size"
+            boundary_matrix_B = np.array([*args])
+            boundary_matrix_A = np.zeros([dim, self._total_param_length])
+            # Get the index-offset for the current boundary matrix
+            index_offset = index * (self._spline_order + 1) * dim
+            for n in range(dim):
+                pos_offset = (self._spline_order + 1) * n
+                for i in range(self._spline_order + 1):
+                    boundary_matrix_A[n][
+                        index_offset + pos_offset + i
+                    ] = coeff[i]
+            return self._solver.add_inequality_constraint(
+                boundary_matrix_A, boundary_matrix_B
+            )
+
+        return wrapper
+
+    def apply_lower_bound_with_order(derivative_function):
+        def wrapper(self, t: float, *args, **kwargs):
+            assert (
+                kwargs == {}
+            ), "apply_lower_bound_with_order error, do not use named input variable!"
+            dim = self._dimension
+            # Get index-offset and derivative coefficient from the function
+            index, coeff = derivative_function(self, t, *args)
+
+            assert (
+                len(*args) == dim
+            ), "apply_lower_bound_with_order error, input boundary point size != dimension size"
+            boundary_matrix_B = np.negative(
+                np.array([*args])
+            )  # negative sign for lower bound
+            boundary_matrix_A = np.zeros([dim, self._total_param_length])
+            # Get the index-offset for the current boundary matrix
+            index_offset = index * (self._spline_order + 1) * dim
+            for n in range(dim):
+                pos_offset = (self._spline_order + 1) * n
+                for i in range(self._spline_order + 1):
+                    boundary_matrix_A[n][
+                        index_offset + pos_offset + i
+                    ] = -coeff[i]
+            return self._solver.add_inequality_constraint(
+                boundary_matrix_A, boundary_matrix_B
+            )
+
+        return wrapper
+
     @apply_equality_constraint
     @get_knot_index_and_coefficient
     def add_point_constraint(self, t: float, *args, **kwargs) -> bool:
@@ -240,6 +428,58 @@ class SplineNdSolver(CoefficientBase):
     @apply_equality_constraint
     @get_knot_index_and_coefficient
     def add_point_third_derivative_constraint(self, t: float, *args, **kwargs):
+        return self.t_third_derivative_coefficient(t)
+
+    @apply_lower_bound_with_order
+    @get_knot_index_and_coefficient
+    def add_point_lower_bound(self, t: float, *args, **kwargs):
+        return self.t_coefficient(t)
+
+    @apply_lower_bound_with_order
+    @get_knot_index_and_coefficient
+    def add_point_first_derivative_lower_bound(
+        self, t: float, *args, **kwargs
+    ):
+        return self.t_first_derivative_coefficient(t)
+
+    @apply_lower_bound_with_order
+    @get_knot_index_and_coefficient
+    def add_point_second_derivative_lower_bound(
+        self, t: float, *args, **kwargs
+    ):
+        return self.t_second_derivative_coefficient(t)
+
+    @apply_lower_bound_with_order
+    @get_knot_index_and_coefficient
+    def add_point_third_derivative_lower_bound(
+        self, t: float, *args, **kwargs
+    ):
+        return self.t_third_derivative_coefficient(t)
+
+    @apply_upper_bound_with_order
+    @get_knot_index_and_coefficient
+    def add_point_upper_bound(self, t: float, *args, **kwargs):
+        return self.t_coefficient(t)
+
+    @apply_upper_bound_with_order
+    @get_knot_index_and_coefficient
+    def add_point_first_derivative_upper_bound(
+        self, t: float, *args, **kwargs
+    ):
+        return self.t_first_derivative_coefficient(t)
+
+    @apply_upper_bound_with_order
+    @get_knot_index_and_coefficient
+    def add_point_second_derivative_upper_bound(
+        self, t: float, *args, **kwargs
+    ):
+        return self.t_second_derivative_coefficient(t)
+
+    @apply_upper_bound_with_order
+    @get_knot_index_and_coefficient
+    def add_point_third_derivative_upper_bound(
+        self, t: float, *args, **kwargs
+    ):
         return self.t_third_derivative_coefficient(t)
 
     def add_reference_points_to_objective(
