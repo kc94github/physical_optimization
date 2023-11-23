@@ -6,18 +6,22 @@ from src.solver.spline_nd_solver import SplineNdSolver
 class DistanceTimeSolver(SplineNdSolver, Abstract):
 
     def __init__(self, knots: List[float], spline_order: int):
-        super(SplineNdSolver, self).__init__(knots = knots, spline_order = spline_order, dimension = 1)
+        super(DistanceTimeSolver, self).__init__(knots = knots, spline_order = spline_order, dimension = 1)
+
+    @classmethod
+    def from_knots_and_order(cls, knots: List[float], spline_order: int):
+        return cls(knots, spline_order)
 
     def add_distance_point_to_objective(self, weight: float, t_ref: np.ndarray, points_ref: np.ndarray):
         return self.add_reference_points_to_objective(weight, t_ref, points_ref)
 
-    def add_speed_point_penalty_to_objective(self, weight: float, t_ref: np.ndarray, points_ref: np.ndarray):
+    def add_speed_point_penalty_to_objective(self, weight: float, t_ref: np.ndarray, points_ref: np.ndarray = None):
         return self.add_first_derivative_points_to_objective(weight, t_ref, points_ref) 
 
-    def add_acceleration_point_penalty_to_objective(self, weight: float, t_ref: np.ndarray, points_ref: np.ndarray):
+    def add_acceleration_point_penalty_to_objective(self, weight: float, t_ref: np.ndarray, points_ref: np.ndarray = None):
         return self.add_second_derivative_points_to_objective(weight, t_ref, points_ref) 
 
-    def add_jerk_point_penalty_to_objective(self, weight: float, t_ref: np.ndarray, points_ref: np.ndarray):
+    def add_jerk_point_penalty_to_objective(self, weight: float, t_ref: np.ndarray, points_ref: np.ndarray = None):
         return self.add_third_derivative_points_to_objective(weight, t_ref, points_ref)
 
     def add_distance_increasing_monotone(self, t_ref: np.ndarray = None) -> bool:
@@ -28,7 +32,7 @@ class DistanceTimeSolver(SplineNdSolver, Abstract):
             t_ref = [t_ref]
 
         for t in t_ref:
-            if not self.add_speed_point_lower_bound(t, 0):
+            if not self.add_speed_lower_bound(t, 0):
                 return False
         return True
 
@@ -54,7 +58,7 @@ class DistanceTimeSolver(SplineNdSolver, Abstract):
                 if self.add_point_second_derivative_constraint(t_val, a_val):
                     return False
             return True
-        return self.add_point_second_derivative_constraint(t, speed)
+        return self.add_point_second_derivative_constraint(t, acceleration)
 
     def add_jerk_constraint(self, t: float, jerk: float) -> bool:
         if hasattr(jerk, '__len__'):
@@ -62,7 +66,7 @@ class DistanceTimeSolver(SplineNdSolver, Abstract):
                 if self.add_point_third_derivative_constraint(t_val, j_val):
                     return False
             return True
-        return self.add_point_third_derivative_constraint(t, speed)
+        return self.add_point_third_derivative_constraint(t, jerk)
 
     def add_distance_lower_bound(self, t: float, distance: float) -> bool:
         if hasattr(distance, '__len__'):
@@ -86,7 +90,7 @@ class DistanceTimeSolver(SplineNdSolver, Abstract):
                 if self.add_point_second_derivative_lower_bound(t_val, a_val):
                     return False
             return True
-        return self.add_point_second_derivative_lower_bound(t, speed)
+        return self.add_point_second_derivative_lower_bound(t, acceleration)
 
     def add_jerk_lower_bound(self, t: float, jerk: float) -> bool:
         if hasattr(jerk, '__len__'):
@@ -94,7 +98,7 @@ class DistanceTimeSolver(SplineNdSolver, Abstract):
                 if self.add_point_third_derivative_lower_bound(t_val, j_val):
                     return False
             return True
-        return self.add_point_third_derivative_lower_bound(t, speed)
+        return self.add_point_third_derivative_lower_bound(t, jerk)
 
     def add_distance_upper_bound(self, t: float, distance: float) -> bool:
         if hasattr(distance, '__len__'):
@@ -118,7 +122,7 @@ class DistanceTimeSolver(SplineNdSolver, Abstract):
                 if self.add_point_second_derivative_upper_bound(t_val, a_val):
                     return False
             return True
-        return self.add_point_second_derivative_upper_bound(t, speed)
+        return self.add_point_second_derivative_upper_bound(t, acceleration)
 
     def add_jerk_upper_bound(self, t: float, jerk: float) -> bool:
         if hasattr(jerk, '__len__'):
@@ -126,4 +130,4 @@ class DistanceTimeSolver(SplineNdSolver, Abstract):
                 if self.add_point_third_derivative_upper_bound(t_val, j_val):
                     return False
             return True
-        return self.add_point_third_derivative_upper_bound(t, speed)
+        return self.add_point_third_derivative_upper_bound(t, jerk)

@@ -95,7 +95,7 @@ class TestSplineNdSolver(unittest.TestCase):
             self.test_knots(), self.test_spline_order(), self.test_dimension()
         )
         for t, x, y in zip(self.test_t(), self.test_x(), self.test_y()):
-            s.add_point_constraint(t, [x, y])
+            s.add_point_constraint(t, x, y)
 
         rst = s.solve()
         self.assertEqual(type(rst), np.ndarray)
@@ -111,28 +111,28 @@ class TestSplineNdSolver(unittest.TestCase):
             self.test_knots(), self.test_spline_order(), self.test_dimension()
         )
         for t, x, y in zip(self.test_t(), self.test_x(), self.test_y()):
-            s.add_point_constraint(t, [x, y])
+            s.add_point_constraint(t, x, y)
 
         for t, dx, dy in zip(
             self.test_t(),
             self.test_x_first_derivative(),
             self.test_y_first_derivative(),
         ):
-            s.add_point_first_derivative_constraint(t, [dx, dy])
+            s.add_point_first_derivative_constraint(t, dx, dy)
 
         for t, ddx, ddy in zip(
             self.test_t(),
             self.test_x_second_derivative(),
             self.test_y_second_derivative(),
         ):
-            s.add_point_second_derivative_constraint(t, [ddx, ddy])
+            s.add_point_second_derivative_constraint(t, ddx, ddy)
 
         for t, dddx, dddy in zip(
             self.test_t(),
             self.test_x_third_derivative(),
             self.test_y_third_derivative(),
         ):
-            s.add_point_third_derivative_constraint(t, [dddx, dddy])
+            s.add_point_third_derivative_constraint(t, dddx, dddy)
 
         rst = s.solve()
         self.assertEqual(type(rst), np.ndarray)
@@ -148,32 +148,32 @@ class TestSplineNdSolver(unittest.TestCase):
             self.test_knots(), self.test_spline_order(), self.test_dimension()
         )
         for t, x, y in zip(self.test_t(), self.test_x(), self.test_y()):
-            s.add_point_constraint(t, [x, y])
+            s.add_point_constraint(t, x, y)
             s.add_point_lower_bound(
-                t, [x - 0.1, y - 0.1]
+                t, x - 0.1, y - 0.1
             )  # Test upper bound and lower bound that satisfy the condition
-            s.add_point_upper_bound(t, [x + 0.1, y + 0.1])
+            s.add_point_upper_bound(t, x + 0.1, y + 0.1)
 
         for t, dx, dy in zip(
             self.test_t(),
             self.test_x_first_derivative(),
             self.test_y_first_derivative(),
         ):
-            s.add_point_first_derivative_constraint(t, [dx, dy])
-            s.add_point_first_derivative_lower_bound(t, [dx - 0.1, dy - 0.1])
-            s.add_point_first_derivative_upper_bound(t, [dx + 0.1, dy + 0.1])
+            s.add_point_first_derivative_constraint(t, dx, dy)
+            s.add_point_first_derivative_lower_bound(t, dx - 0.1, dy - 0.1)
+            s.add_point_first_derivative_upper_bound(t, dx + 0.1, dy + 0.1)
 
         for t, ddx, ddy in zip(
             self.test_t(),
             self.test_x_second_derivative(),
             self.test_y_second_derivative(),
         ):
-            s.add_point_second_derivative_constraint(t, [ddx, ddy])
+            s.add_point_second_derivative_constraint(t, ddx, ddy)
             s.add_point_second_derivative_lower_bound(
-                t, [ddx - 0.1, ddy - 0.1]
+                t, ddx - 0.1, ddy - 0.1
             )
             s.add_point_second_derivative_upper_bound(
-                t, [ddx + 0.1, ddy + 0.1]
+                t, ddx + 0.1, ddy + 0.1
             )
 
         for t, dddx, dddy in zip(
@@ -181,12 +181,12 @@ class TestSplineNdSolver(unittest.TestCase):
             self.test_x_third_derivative(),
             self.test_y_third_derivative(),
         ):
-            s.add_point_third_derivative_constraint(t, [dddx, dddy])
+            s.add_point_third_derivative_constraint(t, dddx, dddy)
             s.add_point_third_derivative_lower_bound(
-                t, [dddx - 0.1, dddy - 0.1]
+                t, dddx - 0.1, dddy - 0.1
             )
             s.add_point_third_derivative_upper_bound(
-                t, [dddx + 0.1, dddy + 0.1]
+                t, dddx + 0.1, dddy + 0.1
             )
 
         rst = s.solve()
@@ -224,28 +224,28 @@ class TestSplineNdSolver(unittest.TestCase):
             self.test_knots(), self.test_spline_order(), self.test_dimension()
         )
         for t, x, y in zip(self.test_t(), self.test_x(), self.test_y()):
-            s.add_point_constraint(t, [x, y])
+            s.add_point_constraint(t, x, y)
 
         for t, dx, dy in zip(
             self.test_t(),
             self.test_x_first_derivative(),
             self.test_y_first_derivative(),
         ):
-            s.add_point_first_derivative_constraint(t, [dx, dy])
+            s.add_point_first_derivative_constraint(t, dx, dy)
 
         for t, ddx, ddy in zip(
             self.test_t(),
             self.test_x_second_derivative(),
             self.test_y_second_derivative(),
         ):
-            s.add_point_second_derivative_constraint(t, [ddx, ddy])
+            s.add_point_second_derivative_constraint(t, ddx, ddy)
 
         for t, dddx, dddy in zip(
             self.test_t(),
             self.test_x_third_derivative(),
             self.test_y_third_derivative(),
         ):
-            s.add_point_third_derivative_constraint(t, [dddx, dddy])
+            s.add_point_third_derivative_constraint(t, dddx, dddy)
 
         # Adding smooth constraint across all knots
         self.assertEqual(

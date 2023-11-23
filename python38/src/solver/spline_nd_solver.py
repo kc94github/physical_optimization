@@ -83,6 +83,8 @@ class SplineNdSolver(CoefficientBase, Abstract):
             assert (
                 kwargs == {}
             ), "get_knot_index_and_coefficient error, do not use named input variable!"
+            for arg in args:
+                assert(isinstance(arg, (int, float))), "get argument not in float or int!"
             index = self._search_prev_knot_index(t=t)
             relative_time = t - self._knots[index]
             return index, coefficient_derivative_func(
@@ -96,6 +98,8 @@ class SplineNdSolver(CoefficientBase, Abstract):
             assert (
                 kwargs == {}
             ), "apply_equality_constraint error, do not use named input variable!"
+            for arg in args:
+                assert(isinstance(arg, (int, float))), "get argument not in float or int!"
             dim = self._dimension
             # Get knot index that the input t belongs to, and
             # Get coefficient that the order of derivative that function knot_index_and_coefficient has specified
@@ -112,7 +116,7 @@ class SplineNdSolver(CoefficientBase, Abstract):
                 start_index += self._spline_order + 1
 
             assert (
-                len(*args) == dim
+                len([*args]) == dim
             ), "apply_equality_constraint error, input derivative point size not matching dimension size"
             matrix_B = np.array([*args])
             self._solver.add_equality_constraint(matrix_A, matrix_B)
@@ -124,6 +128,8 @@ class SplineNdSolver(CoefficientBase, Abstract):
             assert (
                 kwargs == {}
             ), "apply_inequality_constraint error, do not use named input variable!"
+            for arg in args:
+                assert(isinstance(arg, (int, float))), "get argument not in float or int!"
             dim = self._dimension
             # Get knot index that the input t belongs to, and
             # Get coefficient that the order of derivative that function knot_index_and_coefficient has specified
@@ -140,7 +146,7 @@ class SplineNdSolver(CoefficientBase, Abstract):
                 start_index += self._spline_order + 1
 
             assert (
-                len(*args) == dim
+                len([*args]) == dim
             ), "apply_inequality_constraint error, input derivative point size not matching dimension size"
             matrix_B = np.array([*args])
             self._solver.add_inequality_constraint(matrix_A, matrix_B)
@@ -355,12 +361,14 @@ class SplineNdSolver(CoefficientBase, Abstract):
             assert (
                 kwargs == {}
             ), "apply_upper_bound_with_order error, do not use named input variable!"
+            for arg in args:
+                assert(isinstance(arg, (int, float))), "get argument not in float or int!"
             dim = self._dimension
             # Get index-offset and derivative coefficient from the function
             index, coeff = derivative_function(self, t, *args)
 
             assert (
-                len(*args) == dim
+                len([*args]) == dim
             ), "apply_upper_bound_with_order error, input boundary point size != dimension size"
             boundary_matrix_B = np.array([*args])
             boundary_matrix_A = np.zeros([dim, self._total_param_length])
@@ -383,12 +391,14 @@ class SplineNdSolver(CoefficientBase, Abstract):
             assert (
                 kwargs == {}
             ), "apply_lower_bound_with_order error, do not use named input variable!"
+            for arg in args:
+                assert(isinstance(arg, (int, float))), "get argument not in float or int!"
             dim = self._dimension
             # Get index-offset and derivative coefficient from the function
             index, coeff = derivative_function(self, t, *args)
 
             assert (
-                len(*args) == dim
+                len([*args]) == dim
             ), "apply_lower_bound_with_order error, input boundary point size != dimension size"
             boundary_matrix_B = np.negative(
                 np.array([*args])
