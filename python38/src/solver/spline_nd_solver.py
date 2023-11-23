@@ -7,7 +7,7 @@ from src.solver.solver_impl import SolverImpl
 from src.geometry.coefficient_base import CoefficientBase
 
 
-class SplineNdSolver(CoefficientBase):
+class SplineNdSolver(CoefficientBase, Abstract):
     def __init__(
         self, knots: List[float], spline_order: int, dimension: int = 1
     ):
