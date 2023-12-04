@@ -84,7 +84,9 @@ class SplineNdSolver(CoefficientBase, Abstract):
                 kwargs == {}
             ), "get_knot_index_and_coefficient error, do not use named input variable!"
             for arg in args:
-                assert(isinstance(arg, (int, float))), "get argument not in float or int!"
+                assert isinstance(
+                    arg, (int, float)
+                ), "get argument not in float or int!"
             index = self._search_prev_knot_index(t=t)
             relative_time = t - self._knots[index]
             return index, coefficient_derivative_func(
@@ -99,7 +101,9 @@ class SplineNdSolver(CoefficientBase, Abstract):
                 kwargs == {}
             ), "apply_equality_constraint error, do not use named input variable!"
             for arg in args:
-                assert(isinstance(arg, (int, float))), "get argument not in float or int!"
+                assert isinstance(
+                    arg, (int, float)
+                ), "get argument not in float or int!"
             dim = self._dimension
             # Get knot index that the input t belongs to, and
             # Get coefficient that the order of derivative that function knot_index_and_coefficient has specified
@@ -129,7 +133,9 @@ class SplineNdSolver(CoefficientBase, Abstract):
                 kwargs == {}
             ), "apply_inequality_constraint error, do not use named input variable!"
             for arg in args:
-                assert(isinstance(arg, (int, float))), "get argument not in float or int!"
+                assert isinstance(
+                    arg, (int, float)
+                ), "get argument not in float or int!"
             dim = self._dimension
             # Get knot index that the input t belongs to, and
             # Get coefficient that the order of derivative that function knot_index_and_coefficient has specified
@@ -362,7 +368,9 @@ class SplineNdSolver(CoefficientBase, Abstract):
                 kwargs == {}
             ), "apply_upper_bound_with_order error, do not use named input variable!"
             for arg in args:
-                assert(isinstance(arg, (int, float))), "get argument not in float or int!"
+                assert isinstance(
+                    arg, (int, float)
+                ), "get argument not in float or int!"
             dim = self._dimension
             # Get index-offset and derivative coefficient from the function
             index, coeff = derivative_function(self, t, *args)
@@ -392,7 +400,9 @@ class SplineNdSolver(CoefficientBase, Abstract):
                 kwargs == {}
             ), "apply_lower_bound_with_order error, do not use named input variable!"
             for arg in args:
-                assert(isinstance(arg, (int, float))), "get argument not in float or int!"
+                assert isinstance(
+                    arg, (int, float)
+                ), "get argument not in float or int!"
             dim = self._dimension
             # Get index-offset and derivative coefficient from the function
             index, coeff = derivative_function(self, t, *args)

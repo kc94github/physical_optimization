@@ -169,12 +169,8 @@ class TestSplineNdSolver(unittest.TestCase):
             self.test_y_second_derivative(),
         ):
             s.add_point_second_derivative_constraint(t, ddx, ddy)
-            s.add_point_second_derivative_lower_bound(
-                t, ddx - 0.1, ddy - 0.1
-            )
-            s.add_point_second_derivative_upper_bound(
-                t, ddx + 0.1, ddy + 0.1
-            )
+            s.add_point_second_derivative_lower_bound(t, ddx - 0.1, ddy - 0.1)
+            s.add_point_second_derivative_upper_bound(t, ddx + 0.1, ddy + 0.1)
 
         for t, dddx, dddy in zip(
             self.test_t(),
@@ -182,12 +178,8 @@ class TestSplineNdSolver(unittest.TestCase):
             self.test_y_third_derivative(),
         ):
             s.add_point_third_derivative_constraint(t, dddx, dddy)
-            s.add_point_third_derivative_lower_bound(
-                t, dddx - 0.1, dddy - 0.1
-            )
-            s.add_point_third_derivative_upper_bound(
-                t, dddx + 0.1, dddy + 0.1
-            )
+            s.add_point_third_derivative_lower_bound(t, dddx - 0.1, dddy - 0.1)
+            s.add_point_third_derivative_upper_bound(t, dddx + 0.1, dddy + 0.1)
 
         rst = s.solve()
         self.assertEqual(type(rst), np.ndarray)
