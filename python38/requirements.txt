@@ -1,7 +1,6 @@
-pylint
-black
-qp_solvers
-numpy
+black==23.10.1
+qpsolvers==4.0.0
+numpy==1.24.4
 
 # black src -l 79
 # black test -l 79
