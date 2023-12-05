@@ -15,6 +15,7 @@ jobs:
         python-version: '3.8'
     - name: Install dependencies
       run: |
+        cd python38
         python -m pip install --upgrade pip
         pip install setuptools wheel twine
     - name: Build and publish
@@ -22,5 +23,6 @@ jobs:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
+        cd python38
         python3.8 setup.py sdist bdist_wheel
         twine upload dist/*

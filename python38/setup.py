@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='drivepathsolver',
-    version='0.1',
+    version='0.1.2',
     author='Kailiang Chen',
     author_email='kailiangchen94@gmail.com',
     description='Use QP solver to optimize paths for robots',
