@@ -1,0 +1,1 @@
+# 1. conda install -c conda-forge osqp-eigen （https://github.com/robotology/osqp-eigen）
