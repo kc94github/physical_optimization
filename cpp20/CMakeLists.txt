@@ -14,10 +14,10 @@ find_package(OsqpEigen REQUIRED)
 add_subdirectory(googletest)
 
 add_subdirectory(src/geometry)
-
 add_subdirectory(src/solver)
+
 add_subdirectory(test/geometry)
-# add_subdirectory(test/solver)
+add_subdirectory(test/solver)
 
 
 # add the executable
