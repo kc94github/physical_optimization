@@ -43,6 +43,14 @@ bool SolverImpl::add_to_objective_function(
 }
 
 bool SolverImpl::set_objective_function(
+    const Eigen::MatrixXd &hessian_matrix,
+    const Eigen::VectorXd &gradient_subvector) {
+  // Turn Eigen::Matrix into Eigen::SparseMatrix
+  return set_objective_function_from_sparse(hessian_matrix.sparseView(),
+                                            gradient_subvector);
+}
+
+bool SolverImpl::set_objective_function_from_sparse(
     const Eigen::SparseMatrix<double> &hessian_matrix,
     const Eigen::VectorXd &gradient_vector) {
   assert(hessian_matrix.rows() == hessian_matrix.cols() &&
@@ -114,18 +122,34 @@ bool SolverImpl::set_lower_bound(const Eigen::VectorXd &lower_bound) {
       lower_bound);
 }
 
-bool SolverImpl::add_equality_constraint(
+bool SolverImpl::add_equality_constraint_with_sparse(
     const Eigen::SparseMatrix<double> &equality_matrix,
     const Eigen::VectorXd &equality_vector) {
-  // return SolverImpl::_add_constraint_helper(equality_matrix, equality_vector,
-  // _equality_constraint_matrix, _equality_constraint_vector, _size); In
-  // equality constraint, upper bound should equals lower bound
   return add_constraint_with_bounds(equality_matrix, equality_vector,
                                     equality_vector);
 }
 
-bool SolverImpl::add_inequality_constraint(
+bool SolverImpl::add_equality_constraint(
+    const Eigen::MatrixXd &equality_matrix,
+    const Eigen::VectorXd &equality_vector) {
+  // return SolverImpl::_add_constraint_helper(equality_matrix, equality_vector,
+  // _equality_constraint_matrix, _equality_constraint_vector, _size); In
+  // equality constraint, upper bound should equals lower bound
+  return add_constraint_with_bounds(equality_matrix.sparseView(),
+                                    equality_vector, equality_vector);
+}
+
+bool SolverImpl::add_inequality_constraint_with_sparse(
     const Eigen::SparseMatrix<double> &inequality_matrix,
+    const Eigen::VectorXd &inequality_vector) {
+  Eigen::VectorXd lower_bound(inequality_matrix.rows());
+  lower_bound.setConstant(std::numeric_limits<double>::min());
+  return add_constraint_with_bounds(inequality_matrix, inequality_vector,
+                                    lower_bound);
+}
+
+bool SolverImpl::add_inequality_constraint(
+    const Eigen::MatrixXd &inequality_matrix,
     const Eigen::VectorXd &inequality_vector) {
   // return SolverImpl::_add_constraint_helper(inequality_matrix,
   // inequality_vector, _inequality_constraint_matrix,
@@ -133,8 +157,8 @@ bool SolverImpl::add_inequality_constraint(
 
   Eigen::VectorXd lower_bound(inequality_matrix.rows());
   lower_bound.setConstant(std::numeric_limits<double>::min());
-  return add_constraint_with_bounds(inequality_matrix, inequality_vector,
-                                    lower_bound);
+  return add_constraint_with_bounds(inequality_matrix.sparseView(),
+                                    inequality_vector, lower_bound);
 }
 
 // bool SolverImpl::_add_constraint_helper(const Eigen::SparseMatrix<double>
@@ -171,15 +195,24 @@ bool SolverImpl::add_constraint_with_bounds(
   assert(constraint_matrix.cols() == _size);
 
   const int prev_constraint_size = _total_constraint_matrix.rows();
+  std::cout << "Total size prev: " << _total_constraint_matrix.rows() << ", "
+            << _total_constraint_matrix.cols() << std::endl;
+
   _total_constraint_matrix.conservativeResize(
-      prev_constraint_size + constraint_matrix.rows(), Eigen::NoChange);
+      prev_constraint_size + constraint_matrix.rows(), _size);
   // _total_constraint_matrix.block(prev_constraint_size, 0,
   // constraint_matrix.rows(), _size) = constraint_matrix;
+
+  std::cout << "Prev constraint size: " << prev_constraint_size << std::endl;
+  std::cout << "Total size now: " << _total_constraint_matrix.rows() << ", "
+            << _total_constraint_matrix.cols() << std::endl;
 
   // Append matB to matA in the row direction
   for (int k = 0; k < constraint_matrix.outerSize(); ++k) {
     for (Eigen::SparseMatrix<double>::InnerIterator it(constraint_matrix, k);
          it; ++it) {
+      std::cout << it.row() << ", " << it.col() << ", " << it.value()
+                << std::endl;
       _total_constraint_matrix.insert(prev_constraint_size + it.row(),
                                       it.col()) = it.value();
     }
@@ -198,7 +231,7 @@ bool SolverImpl::add_constraint_with_bounds(
   return true;
 }
 
-Eigen::Vector<double, Eigen::Dynamic> SolverImpl::solve() {
+Eigen::VectorXd SolverImpl::solve() {
   OsqpEigen::Solver solver;
   // settings
   solver.settings()->setVerbosity(false);
@@ -207,21 +240,21 @@ Eigen::Vector<double, Eigen::Dynamic> SolverImpl::solve() {
   // set the initial data of the QP solver
   solver.data()->setNumberOfVariables(_size);
 
-  Eigen::SparseMatrix<double> new_hessian(_size, _size), new_constraint;
-  solver.data()->setHessianMatrix(new_hessian);
+  solver.data()->setHessianMatrix(_hessian_matrix);
   solver.data()->setGradient(_gradient_vector);
 
   // int total_constraint_size = _equality_constraint_matrix.rows() +
   // _inequality_constraint_matrix.rows() + _size;
   solver.data()->setNumberOfConstraints(_total_constraint_matrix.rows());
-  Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> constraint_matrix;
   // Eigen::Vector<double, Eigen::Dynamic> constraint_upper_bound,
   // constraint_lower_bound; _summarize_constraint_matrix(constraint_matrix,
   // constraint_upper_bound, constraint_lower_bound);
-  solver.data()->setLinearConstraintsMatrix(new_constraint);
+  solver.data()->setLinearConstraintsMatrix(_total_constraint_matrix);
 
   solver.data()->setLowerBound(_total_constraint_lower_bound);
   solver.data()->setUpperBound(_total_constraint_upper_bound);
+
+  solver.initSolver();
 
   solver.solveProblem() == OsqpEigen::ErrorExitFlag::NoError;
   Eigen::Vector<double, Eigen::Dynamic> QPSolution = solver.getSolution();

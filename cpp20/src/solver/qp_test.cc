@@ -77,6 +77,8 @@ void castMPCToQPHessian(const Eigen::DiagonalMatrix<c_float, 1> &Q,
         hessianMatrix.insert(i, i) = value;
     }
   }
+
+  std::cout << "Hessian: " << hessianMatrix.toDense() << std::endl;
 }
 
 void castMPCToQPGradient(const Eigen::DiagonalMatrix<c_float, 1> &Q,
@@ -102,6 +104,8 @@ void castMPCToQPGradient(const Eigen::DiagonalMatrix<c_float, 1> &Q,
     float value = Qy_ref(0, 0) * c(pos);
     gradient(i, 0) = value;
   }
+
+  std::cout << "Gradient Vector: " << gradient << std::endl;
 }
 
 void castMPCToQPConstraintMatrix(
@@ -140,6 +144,8 @@ void castMPCToQPConstraintMatrix(
                                   1 * i + k + 2 * (mpcWindow + 1)) = value;
         }
       }
+
+  std::cout << "Constraint Matrix: " << constraintMatrix.toDense() << std::endl;
 }
 
 void castMPCToQPConstraintVectors(const Eigen::Matrix<c_float, 2, 1> &x0,
@@ -150,6 +156,9 @@ void castMPCToQPConstraintVectors(const Eigen::Matrix<c_float, 2, 1> &x0,
   lowerBound = Eigen::Matrix<c_float, -1, -1>::Zero(2 * (mpcWindow + 1), 1);
   lowerBound.block(0, 0, 2, 1) = -x0;
   upperBound = lowerBound;
+
+  std::cout << "Upper Bound: " << upperBound << std::endl;
+  std::cout << "Lower Bound: " << lowerBound << std::endl;
 }
 
 bool updateHessianMatrix(OsqpEigen::Solver &solver,
@@ -189,7 +198,7 @@ int main() {
   dataStream.open("output.txt");
 
   // set the preview window
-  int mpcWindow = 100;
+  int mpcWindow = 2;
 
   // allocate the dynamics matrices
   Eigen::Matrix<c_float, 2, 2> a;
@@ -255,42 +264,46 @@ int main() {
   clock_t startTime, endTime;
   double avarageTime = 0;
 
-  for (int i = 0; i < numberOfSteps; i++) {
-    startTime = clock();
+  // for (int i = 0; i < numberOfSteps; i++) {
+  int i = 0;
+  startTime = clock();
 
-    setDynamicsMatrices(a, b, c, i * T);
+  setDynamicsMatrices(a, b, c, i * T);
 
-    // update the constraint bound
-    updateHessianMatrix(solver, Q, R, mpcWindow, i);
-    updateLinearConstraintsMatrix(solver, mpcWindow, i);
+  // update the constraint bound
+  updateHessianMatrix(solver, Q, R, mpcWindow, i);
+  updateLinearConstraintsMatrix(solver, mpcWindow, i);
 
-    castMPCToQPGradient(Q, yRef, mpcWindow, i, gradient);
-    solver.updateGradient(gradient);
+  castMPCToQPGradient(Q, yRef, mpcWindow, i, gradient);
+  solver.updateGradient(gradient);
 
-    updateConstraintVectors(x0, lowerBound, upperBound);
-    solver.updateBounds(lowerBound, upperBound);
+  updateConstraintVectors(x0, lowerBound, upperBound);
+  solver.updateBounds(lowerBound, upperBound);
 
-    // solve the QP problem
-    solver.solveProblem() == OsqpEigen::ErrorExitFlag::NoError;
+  // solve the QP problem
+  solver.solveProblem() == OsqpEigen::ErrorExitFlag::NoError;
 
-    // get the controller input
-    QPSolution = solver.getSolution();
-    ctr = QPSolution.block(2 * (mpcWindow + 1), 0, 1, 1);
+  // get the controller input
+  QPSolution = solver.getSolution();
 
-    // save data into file
-    auto x0Data = x0.data();
-    for (int j = 0; j < 2; j++)
-      dataStream << x0Data[j] << " ";
-    dataStream << std::endl;
+  std::cout << "Solution: " << QPSolution << std::endl;
 
-    // propagate the model
-    x0 = a * x0 + b * ctr;
-    y = c * x0;
+  ctr = QPSolution.block(2 * (mpcWindow + 1), 0, 1, 1);
 
-    endTime = clock();
+  // save data into file
+  auto x0Data = x0.data();
+  for (int j = 0; j < 2; j++)
+    dataStream << x0Data[j] << " ";
+  dataStream << std::endl;
 
-    avarageTime += static_cast<double>(endTime - startTime) / CLOCKS_PER_SEC;
-  }
+  // propagate the model
+  x0 = a * x0 + b * ctr;
+  y = c * x0;
+
+  endTime = clock();
+
+  avarageTime += static_cast<double>(endTime - startTime) / CLOCKS_PER_SEC;
+  // }
 
   // close the stream
   dataStream.close();

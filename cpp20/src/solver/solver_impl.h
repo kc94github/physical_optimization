@@ -100,21 +100,27 @@ class SolverImpl {
 
         bool add_to_objective_function(const uint start_row, const uint start_col, const uint add_row_size, const uint add_col_size, const Eigen::SparseMatrix<double>& add_hessian_submatrix, const Eigen::VectorXd& add_gradient_subvector = Eigen::Vector<double, 0>::Zero());
 
-        bool set_objective_function(const Eigen::SparseMatrix<double>& hessian_submatrix, const Eigen::VectorXd& gradient_subvector = Eigen::Vector<double, 0>::Zero());
+        bool set_objective_function(const Eigen::MatrixXd& hessian_matrix, const Eigen::VectorXd& gradient_subvector = Eigen::Vector<double, 0>::Zero());
+
+        bool set_objective_function_from_sparse(const Eigen::SparseMatrix<double>& hessian_submatrix, const Eigen::VectorXd& gradient_subvector = Eigen::Vector<double, 0>::Zero());
 
         bool set_upper_bound(const Eigen::VectorXd &upper_bound);
 
         bool set_lower_bound(const Eigen::VectorXd &lower_bound);
 
-        bool add_equality_constraint(const Eigen::SparseMatrix<double> &equality_matrix, const Eigen::VectorXd &equality_vector);
+        bool add_equality_constraint(const Eigen::MatrixXd &equality_matrix, const Eigen::VectorXd &equality_vector);
 
-        bool add_inequality_constraint(const Eigen::SparseMatrix<double> &inequality_matrix, const Eigen::VectorXd &inequality_vector);
+        bool add_equality_constraint_with_sparse(const Eigen::SparseMatrix<double> &equality_matrix, const Eigen::VectorXd &equality_vector);
+
+        bool add_inequality_constraint_with_sparse(const Eigen::SparseMatrix<double> &inequality_matrix, const Eigen::VectorXd &inequality_vector);
+
+        bool add_inequality_constraint(const Eigen::MatrixXd &inequality_matrix, const Eigen::VectorXd &inequality_vector);
 
         // bool _add_constraint_helper(const Eigen::SparseMatrix<double> &coefficient_matrix, const Eigen::VectorXd &constant_vector, Eigen::SparseMatrix<double> &constraint_matrix, Eigen::VectorXd &constraint_vector, uint size);
 
         bool add_constraint_with_bounds(const Eigen::SparseMatrix<double> &constraint_matrix, const Eigen::VectorXd &upper_bound, const Eigen::VectorXd &lower_bound);
 
-        Eigen::Vector<double, Eigen::Dynamic> solve();
+        Eigen::VectorXd solve();
 };      
 
 }
