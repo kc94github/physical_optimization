@@ -14,20 +14,22 @@ class SolverImpl {
     private:
 
         uint _size;
-        // Eigen::SparseMatrix<double> _hessian_matrix;
         Eigen::SparseMatrix<double> _hessian_matrix;
         
         Eigen::VectorXd _gradient_vector;
 
-        // Eigen::Matrix<double, 0, Eigen::Dynamic> _total_constraint_matrix;
         Eigen::SparseMatrix<double> _total_constraint_matrix;
         Eigen::VectorXd _total_constraint_upper_bound;
         Eigen::VectorXd _total_constraint_lower_bound;
 
+    public:
 
-        inline void reset_matrices() {
-            // _hessian_matrix = Eigen::Matrix<double, _size, _size>::Zero();
-            // _gradient_vector = Eigen::Vector<double, _size>::Zero();
+        SolverImpl(uint size = 1):_size(size) {
+            reset_matrices();
+        }
+
+        inline void reset_matrices(uint size = 0) {
+            if (size != 0) _size = size;
 
             _hessian_matrix.resize(_size, _size);
             _hessian_matrix.setZero();
@@ -38,12 +40,6 @@ class SolverImpl {
             _total_constraint_matrix.resize(0, _size);
             _total_constraint_upper_bound.resize(0);
             _total_constraint_lower_bound.resize(0);
-        }
-
-    public:
-
-        SolverImpl(uint size = 1):_size(size) {
-            reset_matrices();
         }
 
         inline std::string toString() const {
@@ -68,22 +64,6 @@ class SolverImpl {
             return _gradient_vector;
         }
 
-        // inline auto equality_constraint_matrix() const {
-        //     return _equality_constraint_matrix;
-        // }
-
-        // inline auto equality_constraint_vector() const {
-        //     return _equality_constraint_vector;
-        // }
-
-        // inline auto inequality_constraint_matrix() const {
-        //     return _inequality_constraint_matrix;
-        // }
-
-        // inline auto inequality_constraint_vector() const {
-        //     return _inequality_constraint_vector;
-        // }
-
         inline auto constraint_matrix() const {
             return _total_constraint_matrix;
         }
@@ -98,7 +78,7 @@ class SolverImpl {
 
         bool add_value_to_gradient_vector(const uint row_index, const double value);
 
-        bool add_to_objective_function(const uint start_row, const uint start_col, const uint add_row_size, const uint add_col_size, const Eigen::SparseMatrix<double>& add_hessian_submatrix, const Eigen::VectorXd& add_gradient_subvector = Eigen::Vector<double, 0>::Zero());
+        bool add_to_objective_function_from_sparse(const uint start_row, const uint start_col, const uint add_row_size, const uint add_col_size, const Eigen::SparseMatrix<double>& add_hessian_submatrix, const Eigen::VectorXd& add_gradient_subvector = Eigen::Vector<double, 0>::Zero());
 
         bool set_objective_function(const Eigen::MatrixXd& hessian_matrix, const Eigen::VectorXd& gradient_subvector = Eigen::Vector<double, 0>::Zero());
 
