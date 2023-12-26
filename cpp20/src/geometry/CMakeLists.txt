@@ -1,0 +1,4 @@
+add_library(coefficient_base coefficient_base.h coefficient_base.cc)
+
+target_include_directories(coefficient_base PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(coefficient_base OsqpEigen::OsqpEigen)
