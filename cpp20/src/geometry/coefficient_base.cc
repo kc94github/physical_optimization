@@ -1,19 +1,7 @@
 #include "coefficient_base.h"
-// #include "src/geometry/coefficient_base.h"
 
 using namespace Geometry;
 
-bool CoefficientBase::updateHessianMatrix(
-    OsqpEigen::Solver &solver, const Eigen::DiagonalMatrix<c_float, 1> &Q,
-    const Eigen::DiagonalMatrix<c_float, 1> &R, int mpcWindow, int k) {
-  Eigen::SparseMatrix<c_float> hessianMatrix;
-  // castMPCToQPHessian(Q, R, mpcWindow, k, hessianMatrix);
-
-  if (!solver.updateHessianMatrix(hessianMatrix))
-    return false;
-
-  return true;
-}
 
 std::vector<double> CoefficientBase::t_coefficient(double t) const {
   std::vector<double> res(_order + 1, 0);

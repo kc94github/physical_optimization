@@ -12,3 +12,14 @@ target_link_libraries(
 )
 
 add_test(NAME test_coefficient_base COMMAND test_coefficient_base )
+
+add_executable(test_polynomial1d test_polynomial1d.cc )
+target_link_libraries(
+    test_polynomial1d PUBLIC
+    coefficient_base
+    polynomial1d
+    gtest
+    gtest_main
+)
+
+add_test(NAME test_polynomial1d COMMAND test_polynomial1d )

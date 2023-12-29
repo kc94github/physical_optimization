@@ -15,6 +15,7 @@ add_subdirectory(googletest)
 
 add_subdirectory(src/geometry)
 add_subdirectory(src/solver)
+add_subdirectory(src/utils)
 
 add_subdirectory(test/geometry)
 add_subdirectory(test/solver)
