@@ -2,7 +2,6 @@
 
 using namespace Geometry;
 
-
 std::vector<double> CoefficientBase::t_coefficient(double t) const {
   std::vector<double> res(_order + 1, 0);
   res[0] = 1;
