@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 #include <iostream>
 #include <string>
@@ -14,6 +16,7 @@ class SolverImpl {
     private:
 
         uint _size;
+        // Eigen::SparseMatrix<double> _hessian_matrix;
         Eigen::SparseMatrix<double> _hessian_matrix;
         
         Eigen::VectorXd _gradient_vector;

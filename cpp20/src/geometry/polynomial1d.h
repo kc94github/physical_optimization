@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 #include "coefficient_base.h"
 
@@ -37,7 +39,7 @@ class Polynomial1d : public CoefficientBase {
         }
 
         template<typename CoefficientFunc, typename... Args>
-        double summation(CoefficientFunc coefficient_func, Args... args) {
+        double summation(CoefficientFunc coefficient_func, Args... args) const{
             double total = 0.0;
             std::vector<double> res = coefficient_func(args...);
             for (int i=0;i<res.size();i++) {
@@ -46,17 +48,17 @@ class Polynomial1d : public CoefficientBase {
             return total;
         }
 
-        double evaluate(const double& t);
+        double evaluate(const double& t) const;
 
-        double derivative(const double& t);
+        double derivative(const double& t) const;
 
-        double second_derivative(const double& t);
+        double second_derivative(const double& t) const;
 
-        double third_derivative(const double& t);
+        double third_derivative(const double& t) const;
 
-        Polynomial1d derivative_polynomial(const uint& order);
+        Polynomial1d derivative_polynomial(const uint& order) const;
 
-        Polynomial1d integral_polynomial(const uint& order);
+        Polynomial1d integral_polynomial(const uint& order) const;
 
 };
 
