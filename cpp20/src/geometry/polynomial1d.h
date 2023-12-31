@@ -56,9 +56,9 @@ class Polynomial1d : public CoefficientBase {
 
         double third_derivative(const double& t) const;
 
-        Polynomial1d derivative_polynomial(const uint& order) const;
+        Polynomial1d derivative_polynomial(const uint& order = 1) const;
 
-        Polynomial1d integral_polynomial(const uint& order) const;
+        Polynomial1d integral_polynomial(const uint& order = 1) const;
 
 };
 

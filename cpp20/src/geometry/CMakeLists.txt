@@ -12,3 +12,8 @@ add_library(polynomial2d polynomial2d.h polynomial2d.cc)
 
 target_include_directories(polynomial2d PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(polynomial2d PUBLIC abstract polynomial1d)
+
+add_library(spline1d spline1d.h spline1d.cc)
+
+target_include_directories(spline1d PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(spline1d PUBLIC abstract polynomial1d)

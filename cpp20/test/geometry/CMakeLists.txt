@@ -34,3 +34,14 @@ target_link_libraries(
 )
 
 add_test(NAME test_polynomial2d COMMAND test_polynomial2d )
+
+add_executable(test_spline1d test_spline1d.cc )
+target_link_libraries(
+    test_spline1d PUBLIC
+    polynomial1d
+    spline1d
+    gtest
+    gtest_main
+)
+
+add_test(NAME test_spline1d COMMAND test_spline1d )
