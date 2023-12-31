@@ -1,17 +1,19 @@
-#include "spline1d.h"
 #include "polynomial1d.h"
+#include "spline1d.h"
 #include <gtest/gtest.h>
 
 TEST(Spline1dTest, BasicTest) {
 
   // y = 4x^3 + 3x^2+ 2x + 1 for [0-1]
-  std::vector<double> coeffs_1 = {1.0,2.0,3.0,4.0};
+  std::vector<double> coeffs_1 = {1.0, 2.0, 3.0, 4.0};
   // y = 4(x-1)^3 + 3(x-1)^2+ 2(x-1) + 10 for [1-2]
-  std::vector<double> coeffs_2 = {10.0,2.0,3.0,4.0};
+  std::vector<double> coeffs_2 = {10.0, 2.0, 3.0, 4.0};
 
   std::vector<double> knots = {0.0, 1.0, 2.0};
-  Geometry::Polynomial1d poly1 = Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_1);
-  Geometry::Polynomial1d poly2 = Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_2);
+  Geometry::Polynomial1d poly1 =
+      Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_1);
+  Geometry::Polynomial1d poly2 =
+      Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_2);
 
   Geometry::Spline1d sp = Geometry::Spline1d(knots, {poly1, poly2});
 
@@ -30,18 +32,19 @@ TEST(Spline1dTest, BasicTest) {
 
   EXPECT_EQ(sp.knot_segment(0), p1);
   EXPECT_EQ(sp.knot_segment(1), p2);
-
 }
 
 TEST(Spline1dTest, PrevKnotIndexSearch) {
   // y = 4x^3 + 3x^2+ 2x + 1 for [0-1]
-  std::vector<double> coeffs_1 = {1.0,2.0,3.0,4.0};
+  std::vector<double> coeffs_1 = {1.0, 2.0, 3.0, 4.0};
   // y = 4(x-1)^3 + 3(x-1)^2+ 2(x-1) + 10 for [1-2]
-  std::vector<double> coeffs_2 = {10.0,2.0,3.0,4.0};
+  std::vector<double> coeffs_2 = {10.0, 2.0, 3.0, 4.0};
 
   std::vector<double> knots = {0.0, 1.0, 2.0};
-  Geometry::Polynomial1d poly1 = Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_1);
-  Geometry::Polynomial1d poly2 = Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_2);
+  Geometry::Polynomial1d poly1 =
+      Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_1);
+  Geometry::Polynomial1d poly2 =
+      Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_2);
 
   Geometry::Spline1d sp = Geometry::Spline1d(knots, {poly1, poly2});
 
@@ -55,13 +58,15 @@ TEST(Spline1dTest, PrevKnotIndexSearch) {
 TEST(Spline1dTest, EvalTest) {
 
   // y = 4x^3 + 3x^2+ 2x + 1 for [0-1]
-  std::vector<double> coeffs_1 = {1.0,2.0,3.0,4.0};
+  std::vector<double> coeffs_1 = {1.0, 2.0, 3.0, 4.0};
   // y = 4(x-1)^3 + 3(x-1)^2+ 2(x-1) + 10 for [1-2]
-  std::vector<double> coeffs_2 = {10.0,2.0,3.0,4.0};
+  std::vector<double> coeffs_2 = {10.0, 2.0, 3.0, 4.0};
 
   std::vector<double> knots = {0.0, 1.0, 2.0};
-  Geometry::Polynomial1d poly1 = Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_1);
-  Geometry::Polynomial1d poly2 = Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_2);
+  Geometry::Polynomial1d poly1 =
+      Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_1);
+  Geometry::Polynomial1d poly2 =
+      Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_2);
 
   Geometry::Spline1d sp = Geometry::Spline1d(knots, {poly1, poly2});
 
@@ -73,40 +78,48 @@ TEST(Spline1dTest, EvalTest) {
 
 TEST(Spline1dTest, DerivativeTest) {
   // y = 4x^3 + 3x^2+ 2x + 1 for [0-1]
-  std::vector<double> coeffs_1 = {1.0,2.0,3.0,4.0};
+  std::vector<double> coeffs_1 = {1.0, 2.0, 3.0, 4.0};
   // y = 4(x-1)^3 + 3(x-1)^2+ 2(x-1) + 10 for [1-2]
-  std::vector<double> coeffs_2 = {10.0,2.0,3.0,4.0};
+  std::vector<double> coeffs_2 = {10.0, 2.0, 3.0, 4.0};
 
   std::vector<double> knots = {0.0, 1.0, 2.0};
-  Geometry::Polynomial1d poly1 = Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_1);
-  Geometry::Polynomial1d poly2 = Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_2);
+  Geometry::Polynomial1d poly1 =
+      Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_1);
+  Geometry::Polynomial1d poly2 =
+      Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_2);
 
   Geometry::Spline1d sp = Geometry::Spline1d(knots, {poly1, poly2});
 
   std::vector<double> derivative_coeffs_1 = {2, 6, 12};
   std::vector<double> derivative_coeffs_2 = {2, 6, 12};
 
-  EXPECT_EQ(sp.derivative_spline(1).polynomials()[0].coefficients(), derivative_coeffs_1);
-  EXPECT_EQ(sp.derivative_spline(1).polynomials()[1].coefficients(), derivative_coeffs_2);
+  EXPECT_EQ(sp.derivative_spline(1).polynomials()[0].coefficients(),
+            derivative_coeffs_1);
+  EXPECT_EQ(sp.derivative_spline(1).polynomials()[1].coefficients(),
+            derivative_coeffs_2);
 }
 
 TEST(Spline1dTest, IntegralTest) {
   // y = 4x^3 + 3x^2+ 2x + 1 for [0-1]
-  std::vector<double> coeffs_1 = {1.0,2.0,3.0,4.0};
+  std::vector<double> coeffs_1 = {1.0, 2.0, 3.0, 4.0};
   // y = 4(x-1)^3 + 3(x-1)^2+ 2(x-1) + 10 for [1-2]
-  std::vector<double> coeffs_2 = {10.0,2.0,3.0,4.0};
+  std::vector<double> coeffs_2 = {10.0, 2.0, 3.0, 4.0};
 
   std::vector<double> knots = {0.0, 1.0, 2.0};
-  Geometry::Polynomial1d poly1 = Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_1);
-  Geometry::Polynomial1d poly2 = Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_2);
+  Geometry::Polynomial1d poly1 =
+      Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_1);
+  Geometry::Polynomial1d poly2 =
+      Geometry::Polynomial1d::polynomial_from_coefficients(coeffs_2);
 
   Geometry::Spline1d sp = Geometry::Spline1d(knots, {poly1, poly2});
 
   std::vector<double> integral_coeffs_1 = {0, 1, 1, 1, 1};
   std::vector<double> integral_coeffs_2 = {0, 10, 1, 1, 1};
 
-  EXPECT_EQ(sp.integral_spline(1).polynomials()[0].coefficients(), integral_coeffs_1);
-  EXPECT_EQ(sp.integral_spline(1).polynomials()[1].coefficients(), integral_coeffs_2);
+  EXPECT_EQ(sp.integral_spline(1).polynomials()[0].coefficients(),
+            integral_coeffs_1);
+  EXPECT_EQ(sp.integral_spline(1).polynomials()[1].coefficients(),
+            integral_coeffs_2);
 }
 
 int main(int argc, char **argv) {

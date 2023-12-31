@@ -2,31 +2,31 @@
 
 using namespace Geometry;
 
-double Polynomial1d::evaluate(const double &t) const{
+double Polynomial1d::evaluate(const double &t) const {
   return summation(
       std::bind(&CoefficientBase::t_coefficient, this, std::placeholders::_1),
       t);
 }
 
-double Polynomial1d::derivative(const double &t) const{
+double Polynomial1d::derivative(const double &t) const {
   return summation(std::bind(&CoefficientBase::t_first_derivative_coefficient,
                              this, std::placeholders::_1),
                    t);
 }
 
-double Polynomial1d::second_derivative(const double &t) const{
+double Polynomial1d::second_derivative(const double &t) const {
   return summation(std::bind(&CoefficientBase::t_second_derivative_coefficient,
                              this, std::placeholders::_1),
                    t);
 }
 
-double Polynomial1d::third_derivative(const double &t) const{
+double Polynomial1d::third_derivative(const double &t) const {
   return summation(std::bind(&CoefficientBase::t_third_derivative_coefficient,
                              this, std::placeholders::_1),
                    t);
 }
 
-Polynomial1d Polynomial1d::derivative_polynomial(const uint &order) const{
+Polynomial1d Polynomial1d::derivative_polynomial(const uint &order) const {
   std::vector<double> old_coefficients = _coefficients;
   for (int t = 0; t < order; t++) {
     std::vector<double> new_coefficients;
@@ -38,7 +38,7 @@ Polynomial1d Polynomial1d::derivative_polynomial(const uint &order) const{
   return Polynomial1d::polynomial_from_coefficients(old_coefficients);
 }
 
-Polynomial1d Polynomial1d::integral_polynomial(const uint &order) const{
+Polynomial1d Polynomial1d::integral_polynomial(const uint &order) const {
   std::vector<double> old_coefficients = _coefficients;
   for (int t = 0; t < order; t++) {
     std::vector<double> new_coefficients = {0};
