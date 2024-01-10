@@ -59,8 +59,16 @@ class SolverImpl {
             return _size;
         }
 
+        inline auto& hessian_matrix() {
+            return _hessian_matrix;
+        }
+
         inline auto hessian_matrix() const {
             return _hessian_matrix;
+        }
+
+        inline auto& gradient_vector() {
+            return _gradient_vector;
         }
 
         inline auto gradient_vector() const {

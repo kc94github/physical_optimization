@@ -6,7 +6,6 @@
 
 namespace Geometry {
 
-
 class Spline1d : public Abstract {
 
     std::vector<double> _knots;
@@ -27,6 +26,14 @@ public:
             s += poly.toString() + "\n";
         }
         return s;
+    }
+
+    static int static_search_prev_knot_index(const std::vector<double>& knots, const double& t) {
+        assert(t >= knots[0] && t <= knots.back());
+        auto it = std::lower_bound(knots.begin(), knots.end(), t);
+        int distance = it - knots.begin();
+        if (distance > 0) return distance - 1;
+        else return distance;
     }
 
     bool operator==(const Spline1d& other) const {
@@ -68,17 +75,15 @@ public:
     }
 
     inline int search_prev_knot_index(const double& t) const {
-        return _search_prev_knot_index(t);
+        return Spline1d::static_search_prev_knot_index(_knots, t);
     }
 
-    // typedef double (Polynomial1d::*EvaluateFunc)(double);
 
     template<typename EvaluateFunc>
     double spline_relative_eval(EvaluateFunc coefficient_func, const double& t) const{
-        int index = _search_prev_knot_index(t);
+        int index = search_prev_knot_index(t);
         double relative_time = t - _knots[index];
         return (_polynomials[index].*coefficient_func)(relative_time);
-        // return coefficient_func(relative_time);
     }
 
     double evaluate(const double& t) const;
@@ -92,16 +97,6 @@ public:
     Spline1d derivative_spline(const int& order = 1) const;
 
     Spline1d integral_spline(const int& order = 1) const;
-
-private:
-
-    int _search_prev_knot_index(const double& t) const {
-        assert(t >= _knots[0] && t <= _knots.back());
-        auto it = std::lower_bound(_knots.begin(), _knots.end(), t);
-        int distance = it - _knots.begin();
-        if (distance > 0) return distance - 1;
-        else return distance;
-    }
 
 };
 
