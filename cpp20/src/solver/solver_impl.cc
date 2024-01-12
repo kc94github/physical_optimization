@@ -9,6 +9,15 @@ bool SolverImpl::add_value_to_gradient_vector(const uint row_index,
   return true;
 }
 
+bool SolverImpl::add_to_objective_function(
+    const uint start_row, const uint start_col, const uint add_row_size,
+    const uint add_col_size, const Eigen::MatrixXd &add_hessian_submatrix,
+    const Eigen::VectorXd &add_gradient_subvector) {
+  return add_to_objective_function_from_sparse(
+      start_row, start_col, add_row_size, add_col_size,
+      add_hessian_submatrix.sparseView(), add_gradient_subvector);
+}
+
 bool SolverImpl::add_to_objective_function_from_sparse(
     const uint start_row, const uint start_col, const uint add_row_size,
     const uint add_col_size,

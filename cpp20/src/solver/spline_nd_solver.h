@@ -56,7 +56,7 @@ public:
 
     template<typename EvaluateFunc>
     std::pair<uint, std::vector<double> > get_knot_index_and_coefficient(EvaluateFunc coefficient_func, const double& t) const{
-        int index = _search_prev_knot_index(t);
+        uint index = _search_prev_knot_index(t);
         double relative_time = t - _knots[index];
         return {index, (this->*coefficient_func)(relative_time)};
     }
@@ -121,6 +121,49 @@ public:
         return cur;
     }
 
+    template<typename EvaluateFunc>
+    bool apply_derivative_to_objective(EvaluateFunc coefficient_func, const double& weight, const std::vector<double>& t_ref, const std::vector<std::vector<double>>& point_ref) {
+        assert(t_ref.size() == point_ref.size());
+        if (t_ref.size() == 0) return false;
+        // J = 0.5 * X_tran * Hessian * X + X_tran * Gradient
+        uint param_number = _spline_order + 1;
+        for (uint i=0;i<t_ref.size();i++) {
+            std::vector<double> cur_pt = point_ref[i];
+            assert(cur_pt.size() == _dimension);
+            uint cur_index = _search_prev_knot_index(t_ref[i]);
+            double cur_relative_time = t_ref[i] - _knots[cur_index];
+            uint cur_start_row = _dimension * cur_index * param_number;
+
+            std::vector<double> cur_gradient(_dimension);
+            for (uint d=0;d<_dimension;d++) {
+                cur_gradient.push_back(-2.0 * cur_pt[d] * weight);
+            }
+
+            for (uint p=0;p<param_number;p++) {
+                for (uint d=0;d<_dimension;d++) {
+                    uint idx = cur_start_row + d * param_number;
+                    _impl.add_value_to_gradient_vector(p + idx, cur_gradient[d]);
+                    cur_gradient[d] *= cur_relative_time;
+                }
+            }
+
+            Eigen::MatrixXd cur_hessian_matrix = Eigen::MatrixXd::Zero(param_number, param_number);
+            std::vector<double> cur_coefficient = (this->*coefficient_func)(cur_relative_time);
+
+            for (uint j=0;j<param_number;j++) {
+                for (uint k=0;k<param_number;k++) {
+                    cur_hessian_matrix(j, k) = 2.0 * cur_coefficient[j] * cur_coefficient[k];
+                }
+            }
+
+            for (uint d=0;d<_dimension;d++) {
+                uint idx = cur_start_row + d * param_number;
+                _impl.add_to_objective_function(idx, idx, param_number, param_number, weight * cur_hessian_matrix);
+            }
+        }
+        return true;
+    }
+
     bool add_point_constraint(const double& t, const std::vector<double>& point);
 
     bool add_point_first_derivative_constraint(const double& t, const std::vector<double>& point);
@@ -128,6 +171,15 @@ public:
     bool add_point_second_derivative_constraint(const double& t, const std::vector<double>& point);
 
     bool add_point_third_derivative_constraint(const double& t, const std::vector<double>& point);
+
+    bool add_reference_points_to_objective(const double& weight, const std::vector<double>& t_ref, const std::vector<std::vector<double>>& point_ref);
+
+    bool add_first_derivative_points_to_objective(const double& weight, const std::vector<double>& t_ref, const std::vector<std::vector<double>>& point_ref);
+    
+    bool add_second_derivative_points_to_objective(const double& weight, const std::vector<double>& t_ref, const std::vector<std::vector<double>>& point_ref);
+
+    bool add_third_derivative_points_to_objective(const double& weight, const std::vector<double>& t_ref, const std::vector<std::vector<double>>& point_ref);
+
 
 private:
 

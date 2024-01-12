@@ -197,3 +197,34 @@ bool SplineNdSolver::_add_smooth_constraint_order_three() {
 
   return _impl.add_equality_constraint(smooth_matrix_A, smooth_matrix_B);
 }
+
+bool SplineNdSolver::add_reference_points_to_objective(
+    const double &weight, const std::vector<double> &t_ref,
+    const std::vector<std::vector<double>> &point_ref) {
+  return apply_derivative_to_objective(&CoefficientBase::t_coefficient, weight,
+                                       t_ref, point_ref);
+}
+
+bool SplineNdSolver::add_first_derivative_points_to_objective(
+    const double &weight, const std::vector<double> &t_ref,
+    const std::vector<std::vector<double>> &point_ref) {
+  return apply_derivative_to_objective(
+      &CoefficientBase::t_first_derivative_coefficient, weight, t_ref,
+      point_ref);
+}
+
+bool SplineNdSolver::add_second_derivative_points_to_objective(
+    const double &weight, const std::vector<double> &t_ref,
+    const std::vector<std::vector<double>> &point_ref) {
+  return apply_derivative_to_objective(
+      &CoefficientBase::t_second_derivative_coefficient, weight, t_ref,
+      point_ref);
+}
+
+bool SplineNdSolver::add_third_derivative_points_to_objective(
+    const double &weight, const std::vector<double> &t_ref,
+    const std::vector<std::vector<double>> &point_ref) {
+  return apply_derivative_to_objective(
+      &CoefficientBase::t_third_derivative_coefficient, weight, t_ref,
+      point_ref);
+}
