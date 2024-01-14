@@ -164,6 +164,48 @@ public:
         return true;
     }
 
+    template<typename KnotIndexAndCoefficientFunc>
+    bool apply_lower_bound_with_order(KnotIndexAndCoefficientFunc func, const double& t, const std::vector<double>& point) {
+        assert(point.size() == _dimension);
+        std::pair<uint, std::vector<double> > p = func(t);
+        Eigen::MatrixXd boundary_matrix_A = Eigen::MatrixXd::Zero(_dimension, _param_size);
+        Eigen::VectorXd boundary_matrix_B = Eigen::VectorXd::Zero(_dimension);
+
+        for (int i=0;i<p.second.size();i++) {
+            boundary_matrix_B(i) = -1.0 * point.at(i);
+        }
+
+        uint start_index = p.first * _dimension * (_spline_order + 1);
+        for (uint i=0;i<_dimension;i++) {
+            uint pos_offset = i * (_spline_order + 1);
+            for (uint t=0;t<_spline_order+1;t++) {
+                boundary_matrix_A(i, start_index + pos_offset + t) = -p.second.at(t);
+            }
+        }
+        return _impl.add_inequality_constraint(boundary_matrix_A, boundary_matrix_B);
+    }
+
+    template<typename KnotIndexAndCoefficientFunc>
+    bool apply_upper_bound_with_order(KnotIndexAndCoefficientFunc func, const double& t, const std::vector<double>& point) {
+        assert(point.size() == _dimension);
+        std::pair<uint, std::vector<double> > p = func(t);
+        Eigen::MatrixXd boundary_matrix_A = Eigen::MatrixXd::Zero(_dimension, _param_size);
+        Eigen::VectorXd boundary_matrix_B = Eigen::VectorXd::Zero(_dimension);
+
+        for (int i=0;i<p.second.size();i++) {
+            boundary_matrix_B(i) = point.at(i);
+        }
+
+        uint start_index = p.first * _dimension * (_spline_order + 1);
+        for (uint i=0;i<_dimension;i++) {
+            uint pos_offset = i * (_spline_order + 1);
+            for (uint t=0;t<_spline_order+1;t++) {
+                boundary_matrix_A(i, start_index + pos_offset + t) = p.second.at(t);
+            }
+        }
+        return _impl.add_inequality_constraint(boundary_matrix_A, boundary_matrix_B);
+    }
+
     bool add_point_constraint(const double& t, const std::vector<double>& point);
 
     bool add_point_first_derivative_constraint(const double& t, const std::vector<double>& point);
@@ -180,6 +222,21 @@ public:
 
     bool add_third_derivative_points_to_objective(const double& weight, const std::vector<double>& t_ref, const std::vector<std::vector<double>>& point_ref);
 
+    bool add_point_upper_bound(const double& t, const std::vector<double>& point);
+
+    bool add_point_first_derivative_upper_bound(const double& t, const std::vector<double>& point);
+
+    bool add_point_second_derivative_upper_bound(const double& t, const std::vector<double>& point);
+
+    bool add_point_third_derivative_upper_bound(const double& t, const std::vector<double>& point);
+
+    bool add_point_lower_bound(const double& t, const std::vector<double>& point);
+
+    bool add_point_first_derivative_lower_bound(const double& t, const std::vector<double>& point);
+
+    bool add_point_second_derivative_lower_bound(const double& t, const std::vector<double>& point);
+
+    bool add_point_third_derivative_lower_bound(const double& t, const std::vector<double>& point);
 
 private:
 

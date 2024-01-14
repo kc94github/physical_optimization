@@ -228,3 +228,81 @@ bool SplineNdSolver::add_third_derivative_points_to_objective(
       &CoefficientBase::t_third_derivative_coefficient, weight, t_ref,
       point_ref);
 }
+
+bool SplineNdSolver::add_point_upper_bound(const double &t,
+                                           const std::vector<double> &point) {
+  return apply_upper_bound_with_order(
+      std::bind(&SplineNdSolver::get_knot_index_and_coefficient<decltype(
+                    &CoefficientBase::t_coefficient)>,
+                this, &CoefficientBase::t_coefficient, std::placeholders::_1),
+      t, point);
+}
+
+bool SplineNdSolver::add_point_first_derivative_upper_bound(
+    const double &t, const std::vector<double> &point) {
+  return apply_upper_bound_with_order(
+      std::bind(&SplineNdSolver::get_knot_index_and_coefficient<decltype(
+                    &CoefficientBase::t_first_derivative_coefficient)>,
+                this, &CoefficientBase::t_first_derivative_coefficient,
+                std::placeholders::_1),
+      t, point);
+}
+
+bool SplineNdSolver::add_point_second_derivative_upper_bound(
+    const double &t, const std::vector<double> &point) {
+  return apply_upper_bound_with_order(
+      std::bind(&SplineNdSolver::get_knot_index_and_coefficient<decltype(
+                    &CoefficientBase::t_second_derivative_coefficient)>,
+                this, &CoefficientBase::t_second_derivative_coefficient,
+                std::placeholders::_1),
+      t, point);
+}
+
+bool SplineNdSolver::add_point_third_derivative_upper_bound(
+    const double &t, const std::vector<double> &point) {
+  return apply_upper_bound_with_order(
+      std::bind(&SplineNdSolver::get_knot_index_and_coefficient<decltype(
+                    &CoefficientBase::t_third_derivative_coefficient)>,
+                this, &CoefficientBase::t_third_derivative_coefficient,
+                std::placeholders::_1),
+      t, point);
+}
+
+bool SplineNdSolver::add_point_lower_bound(const double &t,
+                                           const std::vector<double> &point) {
+  return apply_lower_bound_with_order(
+      std::bind(&SplineNdSolver::get_knot_index_and_coefficient<decltype(
+                    &CoefficientBase::t_coefficient)>,
+                this, &CoefficientBase::t_coefficient, std::placeholders::_1),
+      t, point);
+}
+
+bool SplineNdSolver::add_point_first_derivative_lower_bound(
+    const double &t, const std::vector<double> &point) {
+  return apply_lower_bound_with_order(
+      std::bind(&SplineNdSolver::get_knot_index_and_coefficient<decltype(
+                    &CoefficientBase::t_first_derivative_coefficient)>,
+                this, &CoefficientBase::t_first_derivative_coefficient,
+                std::placeholders::_1),
+      t, point);
+}
+
+bool SplineNdSolver::add_point_second_derivative_lower_bound(
+    const double &t, const std::vector<double> &point) {
+  return apply_lower_bound_with_order(
+      std::bind(&SplineNdSolver::get_knot_index_and_coefficient<decltype(
+                    &CoefficientBase::t_second_derivative_coefficient)>,
+                this, &CoefficientBase::t_second_derivative_coefficient,
+                std::placeholders::_1),
+      t, point);
+}
+
+bool SplineNdSolver::add_point_third_derivative_lower_bound(
+    const double &t, const std::vector<double> &point) {
+  return apply_lower_bound_with_order(
+      std::bind(&SplineNdSolver::get_knot_index_and_coefficient<decltype(
+                    &CoefficientBase::t_third_derivative_coefficient)>,
+                this, &CoefficientBase::t_third_derivative_coefficient,
+                std::placeholders::_1),
+      t, point);
+}
