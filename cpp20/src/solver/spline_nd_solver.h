@@ -9,7 +9,7 @@
 namespace Solver {
 
 class SplineNdSolver : public Geometry::CoefficientBase {
-
+protected:
     std::vector<double> _knots;
     uint _spline_order;
     uint _dimension;
@@ -238,7 +238,7 @@ public:
 
     bool add_point_third_derivative_lower_bound(const double& t, const std::vector<double>& point);
 
-private:
+protected:
 
     inline uint _search_prev_knot_index(double t) const {
         return Geometry::Spline1d::static_search_prev_knot_index(_knots, t);
