@@ -40,6 +40,18 @@ public:
         return _impl.gradient_vector();
     }
 
+    inline auto constraint_matrix() const {
+        return _impl.constraint_matrix();
+    }
+
+    inline auto upper_bound_vector() const {
+        return _impl.upper_bound_vector();
+    }
+
+    inline auto lower_bound_vector() const {
+        return _impl.lower_bound_vector();
+    }
+
     inline Eigen::VectorXd solve() {
         return _impl.solve();
     }
@@ -68,7 +80,7 @@ public:
 
         Eigen::MatrixXd coeff(1, _spline_order + 1);
         for (int i=0;i<p.second.size();i++) {
-            coeff(1, i) = p.second.at(i);
+            coeff(0, i) = p.second.at(i);
         }
 
         uint start_index = p.first * (_dimension * (_spline_order + 1));
@@ -136,7 +148,7 @@ public:
 
             std::vector<double> cur_gradient(_dimension);
             for (uint d=0;d<_dimension;d++) {
-                cur_gradient.push_back(-2.0 * cur_pt[d] * weight);
+                cur_gradient[d] = -2.0 * cur_pt[d] * weight;
             }
 
             for (uint p=0;p<param_number;p++) {
@@ -171,7 +183,7 @@ public:
         Eigen::MatrixXd boundary_matrix_A = Eigen::MatrixXd::Zero(_dimension, _param_size);
         Eigen::VectorXd boundary_matrix_B = Eigen::VectorXd::Zero(_dimension);
 
-        for (int i=0;i<p.second.size();i++) {
+        for (int i=0;i<point.size();i++) {
             boundary_matrix_B(i) = -1.0 * point.at(i);
         }
 
@@ -192,7 +204,7 @@ public:
         Eigen::MatrixXd boundary_matrix_A = Eigen::MatrixXd::Zero(_dimension, _param_size);
         Eigen::VectorXd boundary_matrix_B = Eigen::VectorXd::Zero(_dimension);
 
-        for (int i=0;i<p.second.size();i++) {
+        for (int i=0;i<point.size();i++) {
             boundary_matrix_B(i) = point.at(i);
         }
 

@@ -72,7 +72,7 @@ bool SolverImpl::set_objective_function_from_sparse(
 bool SolverImpl::set_upper_bound(const Eigen::VectorXd &upper_bound) {
   assert(upper_bound.rows() == _size);
   Eigen::VectorXd inf_lower_bound(_size);
-  inf_lower_bound.setConstant(std::numeric_limits<double>::min());
+  inf_lower_bound.setConstant(std::numeric_limits<double>::lowest());
 
   return add_constraint_with_bounds(
       Eigen::MatrixXd::Identity(_size, _size).sparseView(), upper_bound,
@@ -107,7 +107,7 @@ bool SolverImpl::add_inequality_constraint_with_sparse(
     const Eigen::SparseMatrix<double> &inequality_matrix,
     const Eigen::VectorXd &inequality_vector) {
   Eigen::VectorXd lower_bound(inequality_matrix.rows());
-  lower_bound.setConstant(std::numeric_limits<double>::min());
+  lower_bound.setConstant(std::numeric_limits<double>::lowest());
   return add_constraint_with_bounds(inequality_matrix, inequality_vector,
                                     lower_bound);
 }
@@ -116,7 +116,7 @@ bool SolverImpl::add_inequality_constraint(
     const Eigen::MatrixXd &inequality_matrix,
     const Eigen::VectorXd &inequality_vector) {
   Eigen::VectorXd lower_bound(inequality_matrix.rows());
-  lower_bound.setConstant(std::numeric_limits<double>::min());
+  lower_bound.setConstant(std::numeric_limits<double>::lowest());
   return add_constraint_with_bounds(inequality_matrix.sparseView(),
                                     inequality_vector, lower_bound);
 }
@@ -137,8 +137,8 @@ bool SolverImpl::add_constraint_with_bounds(
   for (int k = 0; k < constraint_matrix.outerSize(); ++k) {
     for (Eigen::SparseMatrix<double>::InnerIterator it(constraint_matrix, k);
          it; ++it) {
-      std::cout << it.row() << ", " << it.col() << ", " << it.value()
-                << std::endl;
+      // std::cout << it.row() << ", " << it.col() << ", " << it.value()
+      //           << std::endl;
       _total_constraint_matrix.insert(prev_constraint_size + it.row(),
                                       it.col()) = it.value();
     }
