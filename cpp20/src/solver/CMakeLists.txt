@@ -12,3 +12,8 @@ add_library(path_solver path_solver.h path_solver.cc)
 
 target_include_directories(path_solver PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(path_solver PUBLIC abstract spline_nd_solver)
+
+add_library(distance_time_solver distance_time_solver.h distance_time_solver.cc)
+
+target_include_directories(distance_time_solver PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(distance_time_solver PUBLIC abstract spline_nd_solver)
