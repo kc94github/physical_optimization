@@ -24,3 +24,27 @@ target_link_libraries(
 )
 
 add_test(NAME test_spline_nd_solver COMMAND test_spline_nd_solver)
+
+add_executable(test_distance_time_solver test_distance_time_solver.cc )
+# Link test executable against gtest & gtest_main
+target_link_libraries(
+    test_distance_time_solver PUBLIC
+    spline_nd_solver
+    distance_time_solver
+    gtest
+    gtest_main
+)
+
+add_test(NAME test_distance_time_solver COMMAND test_distance_time_solver)
+
+add_executable(test_path_solver test_path_solver.cc )
+# Link test executable against gtest & gtest_main
+target_link_libraries(
+    test_path_solver PUBLIC
+    spline_nd_solver
+    path_solver
+    gtest
+    gtest_main
+)
+
+add_test(NAME test_path_solver COMMAND test_path_solver)

@@ -29,19 +29,28 @@ bool DistanceTimeSolver::add_distance_point_to_objective(
 bool DistanceTimeSolver::add_speed_point_penalty_to_objective(
     const double &weight, const std::vector<double> &t_ref,
     const std::vector<std::vector<double>> &points_ref) {
-  return add_first_derivative_points_to_objective(weight, t_ref, points_ref);
+  if (points_ref.size() != 0)
+    return add_first_derivative_points_to_objective(weight, t_ref, points_ref);
+  std::vector<std::vector<double>> zeros_pt(t_ref.size(), {0.0});
+  return add_first_derivative_points_to_objective(weight, t_ref, zeros_pt);
 }
 
 bool DistanceTimeSolver::add_acceleration_point_penalty_to_objective(
     const double &weight, const std::vector<double> &t_ref,
     const std::vector<std::vector<double>> &points_ref) {
-  return add_second_derivative_points_to_objective(weight, t_ref, points_ref);
+  if (points_ref.size() != 0)
+    return add_second_derivative_points_to_objective(weight, t_ref, points_ref);
+  std::vector<std::vector<double>> zeros_pt(t_ref.size(), {0.0});
+  return add_second_derivative_points_to_objective(weight, t_ref, zeros_pt);
 }
 
 bool DistanceTimeSolver::add_jerk_point_penalty_to_objective(
     const double &weight, const std::vector<double> &t_ref,
     const std::vector<std::vector<double>> &points_ref) {
-  return add_third_derivative_points_to_objective(weight, t_ref, points_ref);
+  if (points_ref.size() != 0)
+    return add_third_derivative_points_to_objective(weight, t_ref, points_ref);
+  std::vector<std::vector<double>> zeros_pt(t_ref.size(), {0.0});
+  return add_third_derivative_points_to_objective(weight, t_ref, zeros_pt);
 }
 
 bool DistanceTimeSolver::add_distance_increasing_monotone(
