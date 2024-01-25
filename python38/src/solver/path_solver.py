@@ -108,6 +108,8 @@ class PathSolver(SplineNdSolver, Abstract):
             inequality_matrix_A[3][
                 coeff_offset_index + self._spline_order + 1 + i
             ] = (-cos * coeff[i])
+        # print("Matrix A:", inequality_matrix_A[0][0], ":", cos * coeff[0])
+        # print("Matrix B:", inequality_matrix_B[0])
 
         return self._solver.add_inequality_constraint(
             inequality_matrix_A, inequality_matrix_B

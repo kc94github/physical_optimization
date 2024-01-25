@@ -26,6 +26,8 @@ public:
 
     bool add_angle_constraint(const double& t, double angle);
 
+    bool add_2d_boundary_constraint(const double& t, const double& ref_x, const double& ref_y, const double& ref_heading, const double& longitudinal_bound, const double& lateral_bound);
+
 
 };
 }

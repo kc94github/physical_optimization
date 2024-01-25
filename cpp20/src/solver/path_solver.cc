@@ -52,4 +52,50 @@ bool PathSolver::add_angle_constraint(const double &t, double angle) {
                                          inequality_matrix_B);
 }
 
+bool PathSolver::add_2d_boundary_constraint(const double &t,
+                                            const double &ref_x,
+                                            const double &ref_y,
+                                            const double &ref_heading,
+                                            const double &longitudinal_bound,
+                                            const double &lateral_bound) {
+  uint index = _search_prev_knot_index(t);
+  double relative_time = t - _knots[index];
+  std::vector<double> coeff = t_coefficient(relative_time);
+
+  const double sin = std::sin(ref_heading);
+  const double cos = std::cos(ref_heading);
+
+  Eigen::MatrixXd inequality_matrix_A = Eigen::MatrixXd::Zero(4, _param_size);
+  Eigen::VectorXd inequality_matrix_B = Eigen::VectorXd::Zero(4);
+
+  inequality_matrix_B(0) = longitudinal_bound + cos * ref_x + sin * ref_y;
+  inequality_matrix_B(1) = longitudinal_bound - cos * ref_x - sin * ref_y;
+  inequality_matrix_B(2) = lateral_bound - sin * ref_x + cos * ref_y;
+  inequality_matrix_B(3) = lateral_bound + sin * ref_x - cos * ref_y;
+
+  uint offset_index = _dimension * (_spline_order + 1) * index;
+
+  for (uint i = 0; i < _spline_order + 1; i++) {
+
+    inequality_matrix_A(0, offset_index + i) = cos * coeff[i];
+    inequality_matrix_A(0, offset_index + _spline_order + 1 + i) =
+        sin * coeff[i];
+
+    inequality_matrix_A(1, offset_index + i) = -cos * coeff[i];
+    inequality_matrix_A(1, offset_index + _spline_order + 1 + i) =
+        -sin * coeff[i];
+
+    inequality_matrix_A(2, offset_index + i) = -sin * coeff[i];
+    inequality_matrix_A(2, offset_index + _spline_order + 1 + i) =
+        cos * coeff[i];
+
+    inequality_matrix_A(3, offset_index + i) = sin * coeff[i];
+    inequality_matrix_A(3, offset_index + _spline_order + 1 + i) =
+        -cos * coeff[i];
+  }
+
+  return _impl.add_inequality_constraint(inequality_matrix_A,
+                                         inequality_matrix_B);
+}
+
 } // namespace Solver

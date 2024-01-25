@@ -91,6 +91,28 @@ TEST_F(PathSolverTest, BasicTest) {
   EXPECT_EQ(solver.param_size(), 16);
 }
 
+TEST_F(PathSolverTest, BoundaryConstarintTest) {
+  // X(t) = 4t^3+3t^2+2t+1 for [0-1]
+  // X(t) = 4(t-1)^3 + 15(t-1)^2 + 20(t-1) + 10 for [1-2]
+
+  // Y(t) = t^3 + t + 5 for [0-1]
+  // Y(t) = (t-1)^3 + 3(t-1)^2 + 4(t-1) + 7 for [1-2]
+  double longitudinal_bound = 0.01, lateral_bound = 0.01;
+  Solver::PathSolver solver(this->knots(), 3);
+  for (int i = 0; i < this->test_t().size(); i++) {
+    solver.add_point_constraint(this->test_t().at(i),
+                                {this->test_x().at(i), this->test_y().at(i)});
+    double heading = std::atan2(this->test_y_first_derivative().at(i),
+                                this->test_x_first_derivative().at(i));
+    solver.add_2d_boundary_constraint(
+        this->test_t().at(i), this->test_x().at(i), this->test_y().at(i),
+        heading, longitudinal_bound, lateral_bound);
+  }
+
+  Eigen::VectorXd rst = solver.solve();
+  this->assertSolverResult(rst, 0.001);
+}
+
 TEST_F(PathSolverTest, HeadingConstraintTest) {
   // X(t) = 4t^3+3t^2+2t+1 for [0-1]
   // X(t) = 4(t-1)^3 + 15(t-1)^2 + 20(t-1) + 10 for [1-2]
