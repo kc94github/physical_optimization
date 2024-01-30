@@ -20,7 +20,7 @@ jobs:
 
     - name: Install dependency
       run: |
-        # conda install -y -c conda-forge osqp-eigen
+        conda install -y -c conda-forge osqp-eigen
         git clone https://github.com/robotology/osqp-eigen.git
         cd osqp-eigen
         mkdir build
