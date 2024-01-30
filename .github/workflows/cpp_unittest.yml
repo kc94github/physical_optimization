@@ -1,0 +1,19 @@
+name: physical_optimization CI unittest
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Cmake Compile and Unittest
+      run: |
+        cd cpp20
+        mkdir build
+        cd build
+        cmake .. && make -j4
+        make test
