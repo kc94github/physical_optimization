@@ -19,6 +19,7 @@ jobs:
         source $HOME/.bashrc
 
     - name: Install dependency
+      run: |
         conda install -c conda-forge osqp-eigen
 
     - name: Cmake Compile and Unittest
