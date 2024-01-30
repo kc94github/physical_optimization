@@ -20,7 +20,7 @@ jobs:
 
     - name: Install dependency
       run: |
-        conda install -c conda-forge osqp-eigen
+        conda install -y -c conda-forge osqp-eigen
 
     - name: Cmake Compile and Unittest
       run: |
