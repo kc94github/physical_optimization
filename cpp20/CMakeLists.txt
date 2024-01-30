@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 enable_testing()
 
+set(OsqpEigen_DIR "/usr/local/lib/cmake/OsqpEigen")
 find_package(OsqpEigen REQUIRED)
 
 add_subdirectory(googletest)
