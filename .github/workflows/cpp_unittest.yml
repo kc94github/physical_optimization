@@ -21,18 +21,18 @@ jobs:
     - name: Install dependency
       run: |
         conda install -y -c conda-forge osqp-eigen
-        git clone https://github.com/robotology/osqp-eigen.git
-        cd osqp-eigen
-        mkdir build
-        cd build
-        cmake ..
-        make
-        make install
+        # git clone https://github.com/robotology/osqp-eigen.git
+        # cd osqp-eigen
+        # mkdir build
+        # cd build
+        # cmake ..
+        # make
+        # make install
 
 
     - name: Cmake Compile and Unittest
       run: |
-        cd ../../cpp20
+        cd cpp20
         mkdir build
         cd build
         cmake .. && make -j4
