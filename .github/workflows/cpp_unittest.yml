@@ -1,0 +1,40 @@
+name: physical_optimization CI unittest
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Conda
+      run: |
+        # Download and install Miniconda (Linux)
+        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+        bash miniconda.sh -b -p $HOME/miniconda
+        echo 'export PATH="$HOME/miniconda/bin:$PATH"' >> $HOME/.bashrc
+        source $HOME/.bashrc
+
+    - name: Install dependency
+      run: |
+        conda install -y -c conda-forge osqp-eigen
+        ls /root/anaconda/lib/cmake/
+        # git clone https://github.com/robotology/osqp-eigen.git
+        # cd osqp-eigen
+        # mkdir build
+        # cd build
+        # cmake ..
+        # make
+        # make install
+
+
+    - name: Cmake Compile and Unittest
+      run: |
+        cd cpp20
+        mkdir build
+        cd build
+        cmake .. && make -j4
+        make test

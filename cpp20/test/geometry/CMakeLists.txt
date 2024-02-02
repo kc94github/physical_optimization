@@ -12,3 +12,48 @@ target_link_libraries(
 )
 
 add_test(NAME test_coefficient_base COMMAND test_coefficient_base )
+
+add_executable(test_polynomial1d test_polynomial1d.cc )
+target_link_libraries(
+    test_polynomial1d PUBLIC
+    coefficient_base
+    polynomial1d
+    gtest
+    gtest_main
+)
+
+add_test(NAME test_polynomial1d COMMAND test_polynomial1d )
+
+add_executable(test_polynomial2d test_polynomial2d.cc )
+target_link_libraries(
+    test_polynomial2d PUBLIC
+    polynomial2d
+    polynomial1d
+    gtest
+    gtest_main
+)
+
+add_test(NAME test_polynomial2d COMMAND test_polynomial2d )
+
+add_executable(test_spline1d test_spline1d.cc )
+target_link_libraries(
+    test_spline1d PUBLIC
+    polynomial1d
+    spline1d
+    gtest
+    gtest_main
+)
+
+add_test(NAME test_spline1d COMMAND test_spline1d )
+
+add_executable(test_spline2d test_spline2d.cc )
+target_link_libraries(
+    test_spline2d PUBLIC
+    polynomial1d
+    spline1d
+    spline2d
+    gtest
+    gtest_main
+)
+
+add_test(NAME test_spline2d COMMAND test_spline2d )

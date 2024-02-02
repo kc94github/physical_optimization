@@ -2,18 +2,13 @@
 #include <iostream>
 #include <string>
 
+#pragma once
+
 #include <OsqpEigen/OsqpEigen.h>
 #include <Eigen/Dense>
+#include "abstract.h"
 
 namespace Geometry {
-
-// Abstract base class equivalent in C++
-class Abstract {
-    public:
-        virtual ~Abstract() = default;
-
-        virtual std::string toString() const = 0;
-};
 
 // CoefficientBase class
 class CoefficientBase : public Abstract {
@@ -24,11 +19,11 @@ class CoefficientBase : public Abstract {
         // Constructor
         CoefficientBase(int order) : _order(order) {}
 
-        bool updateHessianMatrix(OsqpEigen::Solver& solver,
-                         const Eigen::DiagonalMatrix<c_float, 1>& Q,
-                         const Eigen::DiagonalMatrix<c_float, 1>& R,
-                         int mpcWindow,
-                         int k);
+        // bool updateHessianMatrix(OsqpEigen::Solver& solver,
+        //                  const Eigen::DiagonalMatrix<c_float, 1>& Q,
+        //                  const Eigen::DiagonalMatrix<c_float, 1>& R,
+        //                  int mpcWindow,
+        //                  int k);
 
         // Method to represent the object as a string
         inline std::string toString() const {

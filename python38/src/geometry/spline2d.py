@@ -67,9 +67,6 @@ class Spline2d(Abstract):
     def __len__(self):
         return len(self._x_spline)
 
-    def size(self):
-        return len(self)
-
     def __getitem__(self, index) -> Polynomial2d:
         return self.line_segment(index)
 
