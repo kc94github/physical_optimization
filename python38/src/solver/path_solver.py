@@ -61,6 +61,53 @@ class PathSolver(SplineNdSolver, Abstract):
             inequality_matrix_A, inequality_matrix_B
         )
 
+    def add_angle_kernel(
+        self, t: float, angle_ref: float, weight: float
+    ) -> bool:
+        index = self._search_prev_knot_index(t=t)
+        relative_time = t - self._knots[index]
+        coeff = self.t_first_derivative_coefficient(relative_time)
+
+        sin = math.sin(angle)
+        cos = math.cos(angle)
+
+        total_param_number = self._dimension * (
+            self._spline_order + 1
+        )  # dimension = 2
+        cur_hessian_matrix = np.zeros((total_param_number, total_param_number))
+
+        param_number = self._spline_order + 1
+        expanded_coeff_matrix = np.zeros((param_number, param_number))
+        for i in range(param_number):
+            expanded_coeff_matrix[i][i] = coeff[i] * coeff[i]
+            for j in range(i + 1, param_number):
+                expanded_coeff_matrix[i][j] = coeff[i] * coeff[j]
+                expanded_coeff_matrix[j][i] = expanded_coeff_matrix[i][j]
+
+        cur_hessian_matrix[0 : 0 + param_number, 0 : 0 + param_number] += (
+            expanded_coeff_matrix * sin * sin
+        )
+        cur_hessian_matrix[
+            param_number : 2 * param_number, param_number : 2 * param_number
+        ] += (expanded_coeff_matrix * cos * cos)
+        cur_hessian_matrix[
+            0 : 0 + param_number, param_number : 2 * param_number
+        ] += (expanded_coeff_matrix * sin * cos)
+        cur_hessian_matrix[
+            param_number : 2 * param_number, 0 : 0 + param_number
+        ] += (expanded_coeff_matrix * sin * cos)
+
+        objective_hessian_start_index = (
+            self._dimension * (self._spline_order + 1) * index
+        )  # dimension = 2
+        return self._solver.add_to_objective_function(
+            objective_hessian_start_index,
+            objective_hessian_start_index,
+            total_param_number,
+            total_param_number,
+            weight * cur_hessian_matrix,
+        )
+
     def add_2d_boundary_constraint(
         self,
         t: float,
