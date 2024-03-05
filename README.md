@@ -8,6 +8,9 @@
 ### Python Installation
 (TODO)
 
+## Documentation 
+(TODO)
+
 ## Formulation
 ### 2D-boundary inequality constraint formulation:
 
